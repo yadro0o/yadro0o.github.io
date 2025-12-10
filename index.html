@@ -215,7 +215,6 @@
         .result-overlay.correct-bg { background: rgba(220, 252, 231, 0.98); }
         .result-overlay.wrong-bg { background: rgba(254, 226, 226, 0.98); }
 
-        .res-icon { font-size: 4rem; margin-bottom: 10px; }
         .res-tag { font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
         .res-desc { font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; color: #334155; }
         .source-link { color: var(--accent-color); text-decoration: underline; display: block; margin-top: 10px;}
@@ -238,7 +237,7 @@
         
         <div id="come-back-msg" class="come-back-msg hidden"></div>
         
-        <button id="start-btn" class="btn" disabled>Загрузка...</button>
+        <button id="start-btn" class="btn" disabled onclick="startGame()">Загрузка...</button>
         <div id="status-text" class="status-text">Подключение к базе новостей...</div>
 
         <!-- ADMIN PANEL (Visible for testing) -->
@@ -269,7 +268,6 @@
 
         <!-- RESULT OVERLAY -->
         <div id="result-overlay" class="result-overlay">
-            <div id="res-icon" class="res-icon"></div>
             <div id="res-tag" class="res-tag"></div>
             <div id="res-desc" class="res-desc"></div>
             <button class="btn" onclick="nextQuestion()">Далее</button>
@@ -278,36 +276,35 @@
 
     <!-- FINAL SCREEN -->
     <div id="final-screen" class="screen hidden">
-        <div class="subtitle">Результат за <span id="final-date-display"></span></div>
-        <div class="score-big"><span id="final-score">0</span>/10</div>
+        <div class="subtitle">Ваш результат:</div>
+        <div class="score-big" id="final-score">0 / 10</div>
         <div class="rank-badge" id="final-rank">Читатель</div>
         <p>Возвращайтесь завтра за новой порцией новостей!</p>
         <button class="btn" onclick="location.reload()">На главную</button>
     </div>
 
     <script>
-        // --- STATE ---
+        // ВАЖНО: Не используйте эмодзи в текстовых строках, они могут некорректно отображаться.
+        
         let fullDb = [];
         let dailySet = [];
         let currentQ = 0;
         let score = 0;
         
-        // По умолчанию берем сегодня
-        let currentDateObj = new Date();
-        let todayStr = currentDateObj.toISOString().slice(0, 10);
+        let todayStr = new Date().toISOString().slice(0, 10);
+        let random; 
 
-        // --- SEEDED RANDOM (PRNG) ---
-        // Алгоритм Mulberry32 для предсказуемого рандома по сиду
+        // --- SEEDED RANDOM (Исправленная версия) ---
         function mulberry32(a) {
             return function() {
                 var t = a += 0x6D2B79F5;
+                // ИСПРАВЛЕНО: Math.imult -> Math.imul
                 t = Math.imul(t ^ t >>> 15, t | 1);
                 t ^= t + Math.imul(t ^ t >>> 7, t | 61);
                 return ((t ^ t >>> 14) >>> 0) / 4294967296;
             }
         }
-
-        // Хешируем строку даты в число
+        
         function getDateSeed(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -317,126 +314,91 @@
             return Math.abs(hash);
         }
 
-        // Перемешивание массива с использованием нашего PRNG
-        function shuffleArray(array, randomFn) {
+        // --- Вспомогательные функции для обновления даты ---
+        function updateRandomGenerator() {
+            const seed = getDateSeed(todayStr);
+            random = mulberry32(seed);
+        }
+
+        // Инициализируем генератор первый раз
+        updateRandomGenerator();
+
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(randomFn() * (i + 1));
+                const j = Math.floor(random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
         }
 
-        // --- CORE LOGIC ---
-
-        // Генерация набора на основе todayStr
-        function generateDailySet() {
-            if (!fullDb || fullDb.length === 0) return;
-
-            const seed = getDateSeed(todayStr);
-            const random = mulberry32(seed); // Инициализация генератора с сидом даты
-
-            // 1. Сначала копируем базу, чтобы не мутировать оригинал
-            // 2. Важно: Сортируем базу перед шаффлом, чтобы исходный порядок в JSON не влиял 
-            //    на результат на разных устройствах, если вдруг JSON загрузится иначе (хотя массив упорядочен).
-            let pool = [...fullDb].sort((a,b) => a.id - b.id);
-
-            // 3. Перемешиваем ВЕСЬ пул детерминированно
-            // Это гарантирует, что даже если мы берем новости разных типов, 
-            // сам "рандом" выбора будет привязан к дате.
-            shuffleArray(pool, random);
-
-            // 4. Фильтруем перемешанный пул
-            const realNews = pool.filter(item => item.type === 'REAL');
-            const fakeNews = pool.filter(item => item.type === 'FAKE');
-
-            // 5. Определяем баланс (от 4 до 6 реальных)
-            // Используем тот же random
-            const realCountTarget = 4 + Math.floor(random() * 3);
-            const fakeCountTarget = 10 - realCountTarget;
-
-            // 6. Набираем нужное количество, учитывая реальные размеры массивов
-            const safeRealCount = Math.min(realCountTarget, realNews.length);
-            // Если реальных не хватило, пытаемся добрать фейками до 10, но не больше чем есть
-            const neededFakes = 10 - safeRealCount;
-            const safeFakeCount = Math.min(neededFakes, fakeNews.length);
-
-            const selectedReal = realNews.slice(0, safeRealCount);
-            const selectedFake = fakeNews.slice(0, safeFakeCount);
-
-            // 7. Объединяем и СНОВА перемешиваем, чтобы порядок вопросов (REAL/FAKE) тоже был случайным
-            let finalSet = [...selectedReal, ...selectedFake];
-            shuffleArray(finalSet, random);
-
-            dailySet = finalSet;
-            
-            console.log(`[Panoramdle] Date: ${todayStr}, Seed: ${seed}, Questions: ${dailySet.length}`);
-            console.log(dailySet.map(q => q.type));
-        }
-
-        // Проверка: играл ли уже пользователь
-        function checkHistory() {
-            const lastPlayed = localStorage.getItem('lastPlayedDate');
-            const startBtn = document.getElementById('start-btn');
-            const comeBackMsg = document.getElementById('come-back-msg');
-
-            if (lastPlayed === todayStr) {
-                comeBackMsg.innerHTML = `Вы уже играли за дату <strong>${todayStr}</strong>.<br>Результат не будет записан в статистику, но вы можете переиграть.`;
-                comeBackMsg.classList.remove('hidden');
-                startBtn.innerText = "Сыграть ещё раз";
-            } else {
-                comeBackMsg.classList.add('hidden');
-                startBtn.innerText = "Начать игру";
-            }
-        }
-
-        // --- INITIALIZATION ---
+        // --- ЗАГРУЗКА ---
         window.addEventListener('DOMContentLoaded', async () => {
             const startBtn = document.getElementById('start-btn');
             const statusText = document.getElementById('status-text');
-
-            // Устанавливаем текущую дату в пикер админки
+            const comeBackMsg = document.getElementById('come-back-msg');
+            
+            // Устанавливаем дату в пикер админки
             document.getElementById('debug-date-picker').value = todayStr;
 
-            // Fallback DB на случай ошибок
-            const fallbackDb = [
-                {id: 1, type: "REAL", region: "ru", text: "Тестовый вопрос 1 (REAL)", desc: "Описание...", img: "https://placehold.co/800x600/111/FFF?text=News1", link: ""},
-                {id: 2, type: "FAKE", region: "ru", text: "Тестовый вопрос 2 (FAKE)", desc: "Описание...", img: "https://placehold.co/800x600/222/FFF?text=News2", link: ""},
-                {id: 3, type: "REAL", region: "usa", text: "Тестовый вопрос 3 (REAL)", desc: "Описание...", img: "https://placehold.co/800x600/333/FFF?text=News3", link: ""},
-                {id: 4, type: "FAKE", region: "world", text: "Тестовый вопрос 4 (FAKE)", desc: "Описание...", img: "https://placehold.co/800x600/444/FFF?text=News4", link: ""}
-            ];
-
             try {
+                // 1. Проверка LocalStorage
+                checkHistory();
+
+                // 2. Загрузка базы
+                statusText.innerText = "Загрузка базы данных...";
+
                 const response = await fetch('news.json');
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (!response.ok) throw new Error("Файл news.json не найден");
                 
                 const responseText = await response.text();
-                // Простая защита, если вернулся HTML страницы 404
-                if (responseText.trim().startsWith('<')) throw new Error('Not JSON (HTML received)');
                 
+                // Защита от HTML-ошибок вместо JSON
+                if (responseText.trim().startsWith('<')) throw new Error("Сервер вернул HTML");
+
                 fullDb = JSON.parse(responseText);
-                statusText.innerHTML = `Загружено вопросов: ${fullDb.length}.`;
-                statusText.style.color = "#22c55e"; // green
+                statusText.innerHTML = `База загружена (${fullDb.length} новостей)`;
+                statusText.style.color = "#22c55e";
+
+                // 3. Генерация (только если загрузка успешна)
+                generateDailySet();
+                // Разблокируем кнопку только при успехе
+                startBtn.disabled = false;
 
             } catch (e) {
-                console.warn("Ошибка загрузки news.json, используем резерв:", e);
-                fullDb = fallbackDb;
-                statusText.innerHTML = `Ошибка news.json (${e.message}). Включен резервный режим.`;
-                statusText.style.color = "#f59e0b"; // amber
-            } finally {
-                // ВАЖНО: Вызываем генерацию здесь, когда база точно готова
-                generateDailySet();
-                checkHistory();
-                startBtn.disabled = false;
+                console.error("Критическая ошибка:", e);
+                statusText.innerHTML = `Ошибка загрузки: ${e.message}. Проверьте консоль.`;
+                statusText.style.color = "#ef4444";
+                startBtn.innerText = "ОШИБКА";
+                // Не разблокируем кнопку startBtn, чтобы нельзя было начать без данных
             }
         });
 
-        // --- GAME LOGIC ---
+        // --- ГЕНЕРАЦИЯ ---
+        function generateDailySet() {
+            if (!fullDb.length) return;
+            
+            // Клонируем базу чтобы не портить оригинал при шаффле
+            let dbCopy = JSON.parse(JSON.stringify(fullDb));
+            
+            const realNews = dbCopy.filter(item => item.type === 'REAL');
+            const fakeNews = dbCopy.filter(item => item.type === 'FAKE');
 
+            shuffleArray(realNews);
+            shuffleArray(fakeNews);
+
+            const realCount = 4 + Math.floor(random() * 3);
+            const fakeCount = 10 - realCount;
+
+            const safeRealCount = Math.min(realCount, realNews.length);
+            const safeFakeCount = Math.min(fakeCount, fakeNews.length);
+
+            dailySet = [...realNews.slice(0, safeRealCount), ...fakeNews.slice(0, safeFakeCount)];
+            shuffleArray(dailySet);
+        }
+
+        // --- ИГРА ---
         function startGame() {
-            if (!dailySet || dailySet.length === 0) {
-                alert("Ошибка: вопросы не сгенерированы. Попробуйте обновить страницу.");
-                return;
-            }
+            if(dailySet.length === 0) return alert("Вопросы не загружены!");
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             initDots();
@@ -449,66 +411,49 @@
             for(let i=0; i<dailySet.length; i++) {
                 let d = document.createElement('div');
                 d.className = 'dot';
-                d.id = `dot-${i}`;
+                d.id = 'dot-'+i;
                 container.appendChild(d);
             }
         }
 
         function loadQuestion() {
-            if (currentQ >= dailySet.length) {
-                showResults();
-                return;
-            }
+            if (currentQ >= dailySet.length) return showResults();
             const q = dailySet[currentQ];
             document.getElementById('news-headline').innerText = q.text;
-            
-            // Image handling
-            const imgEl = document.getElementById('news-img');
-            imgEl.style.backgroundImage = `url('${q.img}')`;
-            
+            document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
             const region = q.region ? q.region.toUpperCase() : "WORLD";
             document.getElementById('region-badge').innerText = region;
-
-            // Update dots
+            
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            const curDot = document.getElementById(`dot-${currentQ}`);
-            if(curDot) curDot.classList.add('active');
+            if(document.getElementById('dot-'+currentQ)) {
+                document.getElementById('dot-'+currentQ).classList.add('active');
+            }
         }
 
         function checkAnswer(userChoice) {
             const q = dailySet[currentQ];
-            const isCorrect = (userChoice === q.type);
-            
+            const isCorrect = userChoice === q.type;
             const overlay = document.getElementById('result-overlay');
-            const icon = document.getElementById('res-icon');
             const tag = document.getElementById('res-tag');
             const desc = document.getElementById('res-desc');
-            const dot = document.getElementById(`dot-${currentQ}`);
+            const dot = document.getElementById('dot-'+currentQ);
 
-            // Reset classes
-            overlay.className = 'result-overlay show'; 
-
+            overlay.className = ''; 
             if (isCorrect) {
-                score++;
-                overlay.classList.add('correct-bg');
-                icon.innerText = "✅";
+                overlay.classList.add('show', 'correct-bg');
                 tag.innerText = "ВЕРНО!";
-                tag.style.color = "#15803d"; // dark green
+                score++;
                 if(dot) dot.classList.add('correct');
             } else {
-                overlay.classList.add('wrong-bg');
-                icon.innerText = "❌";
-                tag.innerText = "ОШИБКА";
-                tag.style.color = "#b91c1c"; // dark red
+                overlay.classList.add('show', 'wrong-bg');
+                tag.innerText = "ОШИБКА!";
                 if(dot) dot.classList.add('wrong');
             }
-
-            // Формируем описание
-            let typeLabel = (q.type === 'REAL') ? "Это реальная новость." : "Это сатира ИА Панорама.";
-            let content = `<strong>${typeLabel}</strong><br>${q.desc || ''}`;
             
+            let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br>${q.desc}`;
             if (q.link && q.link.length > 5) {
-                content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник / Подробнее</a>`;
+                // Удален эмодзи из ссылки
+                content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник</a>`;
             }
             desc.innerHTML = content;
         }
@@ -520,26 +465,38 @@
         }
 
         function showResults() {
-            // Сохраняем факт игры только если это был "сегодняшний" день (для честности)
-            // Но в режиме дебага это не так важно. Сохраним текущий todayStr.
             localStorage.setItem('lastPlayedDate', todayStr);
-
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
             
-            document.getElementById('final-date-display').innerText = todayStr;
-            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
             
             const percent = score / dailySet.length;
-            let rank = "Читатель";
-            if(percent > 0.4) rank = "Новостной эрудит";
-            if(percent > 0.7) rank = "Магистр Информации";
-            if(percent === 1) rank = "Бог Панорамы";
-
+            let rank = "Новичок интернета";
+            if(percent > 0.4) rank = "Опытный серфер";
+            if(percent > 0.7) rank = "Грандмастер постиронии";
+            if(percent === 1) rank = "Бог новостной ленты";
+            
             document.getElementById('final-rank').innerText = rank;
         }
 
-        // --- ADMIN / DEBUG FUNCTIONS ---
+        // --- ФУНКЦИИ АДМИН ПАНЕЛИ И ПРОВЕРКИ ИСТОРИИ ---
+        
+        function checkHistory() {
+            const lastPlayed = localStorage.getItem('lastPlayedDate');
+            const startBtn = document.getElementById('start-btn');
+            const comeBackMsg = document.getElementById('come-back-msg');
+            
+            if (lastPlayed === todayStr) {
+                comeBackMsg.innerHTML = "Вы уже выполнили Daily Panoramdle сегодня.<br>Но если хотите улучшить счет или просто скучно — <strong>погнали ещё раз!</strong>";
+                comeBackMsg.classList.remove('hidden');
+                startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
+            } else {
+                comeBackMsg.classList.add('hidden');
+                startBtn.innerText = "НАЧАТЬ";
+            }
+        }
+
         function toggleAdmin() {
             const el = document.getElementById('date-controls');
             el.classList.toggle('hidden');
@@ -549,28 +506,16 @@
             const picker = document.getElementById('debug-date-picker');
             if (!picker.value) return;
 
-            // Обновляем глобальную переменную даты
             todayStr = picker.value;
-            
-            // Сбрасываем состояние игры
             currentQ = 0;
             score = 0;
             
-            // Перегенерируем сет с НОВЫМ сидом
-            generateDailySet();
+            updateRandomGenerator(); // Обновляем сид
+            generateDailySet();      // Перегенерируем вопросы
+            checkHistory();          // Обновляем статус кнопки "Начать"
             
-            // Обновляем UI статуса
-            checkHistory();
-            
-            // Визуальное подтверждение
-            const btn = document.querySelector('.admin-panel button:last-child');
-            const originalText = btn.innerText;
-            btn.innerText = "Applied!";
-            setTimeout(() => btn.innerText = originalText, 1000);
-
             alert(`Дата изменена на ${todayStr}.\nВопросы перегенерированы.`);
         }
-
     </script>
 </body>
 </html>
