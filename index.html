@@ -102,68 +102,65 @@
         #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
         #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
-        /* --- РЕЖИМ 2: IMAGE (Обновленный) --- */
+        /* --- РЕЖИМ 2: IMAGE (Исправленный) --- */
         #game-screen.mode-image {
             display: flex; flex-direction: row; /* Горизонтальная раскладка */
             background: #111;
         }
 
         #game-screen.mode-image .controls-area {
-            display: contents; /* Кнопки становятся частью флекса */
+            display: contents; /* Кнопки становятся частью сетки флекса */
         }
         
         #game-screen.mode-image .choice-btn {
-            width: 10%; /* Узкие полоски */
+            width: 25%; /* Широкие кнопки (было 10%) */
             height: 100vh;
             border: none; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; font-weight: 800; letter-spacing: 3px;
+            font-size: 1.8rem; font-weight: 900; letter-spacing: 2px;
             text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Плавная анимация */
+            transition: all 0.4s ease; /* Плавное расширение */
             z-index: 20;
-            white-space: nowrap; /* Текст не переносится */
+            color: rgba(255,255,255,0.6);
+            /* Убираем вертикальный текст, делаем горизонтальным */
+            writing-mode: horizontal-tb;
         }
 
-        /* Текст внутри кнопок поворачиваем на 90 градусов, чтобы он был "горизонтальным" относительно зрителя, но шел вдоль полоски */
         #game-screen.mode-image .choice-btn span {
             display: block;
-            transform: rotate(-90deg); 
+            transform: none; /* Убираем поворот текста */
         }
 
         #game-screen.mode-image .btn-left { 
             order: 1; /* Слева */
             background: #1a1a1a; border-right: 1px solid #333; 
-            color: var(--news-color);
         }
         #game-screen.mode-image .btn-right { 
             order: 3; /* Справа */
             background: #1a1a1a; border-left: 1px solid #333;
-            color: var(--panorama-color);
         }
 
-        /* Эффект выдвижения */
+        /* Эффект наведения - кнопка расширяется */
         #game-screen.mode-image .btn-left:hover { 
-            background: var(--news-color); color: #000; 
-            width: 25%; /* Расширяем сильно */
+            background: var(--news-color); color: #fff; 
+            width: 35%; /* Становится еще шире */
         }
         #game-screen.mode-image .btn-right:hover { 
-            background: var(--panorama-color); color: #000; 
-            width: 25%; 
+            background: var(--panorama-color); color: #fff; 
+            width: 35%; /* Становится еще шире */
         }
 
         /* Центральная область */
         #game-screen.mode-image .news-display {
-            order: 2; flex-grow: 1;
+            order: 2; flex-grow: 1; /* Занимает все оставшееся место по центру */
             position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: #000;
         }
         
-        /* Уменьшенный контейнер картинки */
         #game-screen.mode-image .img-container {
-            width: 40%; /* Ширина уменьшена */
-            max-height: 50vh; /* Высота уменьшена */
-            aspect-ratio: 16/9;
+            width: 90%; /* Широкая картинка внутри центральной колонки */
+            max-height: 50vh;
             border: 2px solid #333; border-radius: 10px; overflow: hidden;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
             display: flex; justify-content: center; align-items: center;
@@ -173,7 +170,7 @@
             width: 100%; height: 100%; object-fit: contain; display: block;
         }
         #game-screen.mode-image .news-text {
-            margin-top: 30px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 60%;
+            margin-top: 25px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 80%;
             z-index: 2;
         }
         #game-screen.mode-image .news-overlay { display: none; }
@@ -260,7 +257,7 @@
         </div>
 
         <div class="controls-area">
-            <!-- Обернул текст в span для поворота -->
+            <!-- Убрали лишние span, так как текст теперь стандартный -->
             <button class="choice-btn btn-left" onclick="checkAnswer('REAL')"><span>НОВОСТЬ</span></button>
             <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')"><span>ПАНОРАМА</span></button>
         </div>
