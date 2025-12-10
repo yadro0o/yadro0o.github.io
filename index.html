@@ -217,53 +217,72 @@
                 startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
             }
 
-            // 2. Расширенная загрузка базы с диагностикой
+            // 2. Резервная база (на случай ошибки загрузки)
+            const fallbackDb = [
+                { id: 1, type: "REAL", region: "ru", text: "В Госдуме предложили налог на бездетность.", desc: "Такое предложение звучало от депутатов.", img: "https://placehold.co/800x600/111/FFF?text=News+1", link: "" },
+                { id: 2, type: "FAKE", region: "ru", text: "Роскосмос покрасит ракеты под хохлому.", desc: "Это сатира.", img: "https://placehold.co/800x600/222/FFF?text=News+2", link: "" },
+                { id: 3, type: "REAL", region: "usa", text: "Илон Маск вызвал Путина на поединок в Twitter.", desc: "Это реально было в 2022 году.", img: "https://placehold.co/800x600/333/FFF?text=News+3", link: "" },
+                { id: 4, type: "FAKE", region: "world", text: "ООН запретила букву Z в алфавите.", desc: "Выдумка.", img: "https://placehold.co/800x600/444/FFF?text=News+4", link: "" },
+                { id: 5, type: "REAL", region: "world", text: "Австралия проиграла войну страусам эму.", desc: "Исторический факт 1932 года.", img: "https://placehold.co/800x600/555/FFF?text=News+5", link: "" },
+                { id: 6, type: "FAKE", region: "ru", text: "Сбербанк ввел комиссию за просмотр баланса глазами.", desc: "Шутка о комиссиях банков.", img: "https://placehold.co/800x600/666/FFF?text=News+6", link: "" },
+                { id: 7, type: "REAL", region: "usa", text: "Кот стал мэром города на Аляске.", desc: "Кот Стаббс правил с 1997 по 2017.", img: "https://placehold.co/800x600/777/FFF?text=News+7", link: "" },
+                { id: 8, type: "FAKE", region: "world", text: "Apple выпустила кирпич iBrick за $1000.", desc: "Сатира на цены компании.", img: "https://placehold.co/800x600/888/FFF?text=News+8", link: "" },
+                { id: 9, type: "REAL", region: "eu", text: "В Финляндии проводятся соревнования по переноске жен.", desc: "Ежегодный чемпионат мира.", img: "https://placehold.co/800x600/999/FFF?text=News+9", link: "" },
+                { id: 10, type: "FAKE", region: "eu", text: "Британские ученые доказали, что коты — жидкие.", desc: "Это старый мем, а не наука.", img: "https://placehold.co/800x600/aaa/FFF?text=News+10", link: "" },
+                { id: 11, type: "REAL", region: "ru", text: "Мужчина подал в суд на самого себя и выиграл.", desc: "Реальное дело Кертиса Гоки.", img: "https://placehold.co/800x600/bbb/FFF?text=News+11", link: "" },
+                { id: 12, type: "FAKE", region: "ru", text: "Минздрав рекомендовал лечить депрессию 'Сватами'.", desc: "Чистая сатира.", img: "https://placehold.co/800x600/ccc/FFF?text=News+12", link: "" }
+            ];
+
+            // 3. Попытка загрузить news.json
             try {
-                statusText.innerText = "Загрузка news.json...";
+                statusText.innerText = "Загрузка базы данных...";
+                
                 const response = await fetch('news.json');
 
-                // Проверка HTTP статуса
+                // Проверяем HTTP статус
                 if (!response.ok) {
-                    throw new Error(`Ошибка сети: ${response.status} ${response.statusText}. Проверьте, что файл news.json существует в репозитории.`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}. Файл news.json не найден по пути "${window.location.href.replace('index.html', '')}news.json". Проверьте имя файла и расположение.`);
                 }
 
-                // Проверка типа контента (иногда сервер отдает HTML ошибки вместо JSON)
+                // Проверяем Content-Type
                 const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") === -1) {
-                    console.warn("Внимание: Сервер вернул не JSON, а " + contentType);
-                    // Мы продолжим, но если упадет JSON parse, будем знать почему
+                const responseText = await response.text(); // Читаем как текст для анализа
+
+                // Если сервер вернул HTML вместо JSON
+                if (responseText.trim().startsWith('<')) {
+                    throw new Error(`Сервер вернул HTML вместо JSON. Возможные причины:\n1. Файл открыт через file:// (используйте локальный сервер)\n2. GitHub Pages не активирован в Settings → Pages\n3. Файл называется не "news.json" или лежит не в корне репозитория.\n\n🔧 Решение: Используйте Live Server в VS Code или загрузите на GitHub.`);
                 }
 
+                // Парсим JSON
                 try {
-                    fullDb = await response.json();
+                    fullDb = JSON.parse(responseText);
                 } catch (jsonError) {
-                    throw new Error(`Ошибка структуры JSON: Неверный формат файла news.json. Проверьте запятые и кавычки. \nДетали: ${jsonError.message}`);
+                    throw new Error(`Синтаксическая ошибка в news.json на позиции ${jsonError.message}. Проверьте файл на сайте jsonlint.com`);
                 }
                 
-                // Проверка наличия данных
                 if (!Array.isArray(fullDb) || fullDb.length === 0) {
-                    throw new Error("Файл news.json пуст или не содержит массив данных []");
+                    throw new Error("news.json пуст или не содержит массив []");
                 }
 
-                generateDailySet();
-                
-                // Успех
-                if (lastPlayed !== todayStr) {
-                    startBtn.innerText = "НАЧАТЬ";
-                }
-                startBtn.disabled = false;
-                statusText.innerText = `Вопросов на сегодня: 10`;
-                statusText.style.color = "#666"; // Сброс цвета ошибки
+                statusText.innerHTML = `✅ База загружена успешно (${fullDb.length} новостей)`;
+                statusText.style.color = "#22c55e";
 
             } catch (error) {
-                console.error("CRITICAL ERROR:", error);
-                startBtn.innerText = "ОШИБКА";
-                startBtn.style.background = "#333";
+                console.error("❌ ОШИБКА ЗАГРУЗКИ:", error);
                 
-                // Вывод подробной ошибки на экран
-                statusText.innerHTML = `<strong>Не удалось загрузить Panoramdle:</strong><br>${error.message}`;
-                statusText.style.color = "#ef4444";
+                // Используем резервную базу
+                fullDb = fallbackDb;
+                statusText.innerHTML = `⚠️ Не удалось загрузить news.json. Запущен демо-режим с ${fallbackDb.length} тестовыми вопросами.<br><br><small style="color:#ef4444">${error.message}</small>`;
+                statusText.style.color = "#f59e0b";
             }
+
+            // 4. Генерация и запуск
+            generateDailySet();
+            
+            if (lastPlayed !== todayStr) {
+                startBtn.innerText = "НАЧАТЬ";
+            }
+            startBtn.disabled = false;
         });
 
         // --- ГЕНЕРАЦИЯ ---
