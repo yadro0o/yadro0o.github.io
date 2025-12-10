@@ -4,9 +4,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости1",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/847470/FFF?text=News+1",
+    "img": "https://placehold.co/800x600/003039/FFF?text=News+1",
     "link": "Ссылка на источник"
   },
   {
@@ -14,9 +14,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости2",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/175741/FFF?text=News+2",
+    "img": "https://placehold.co/800x600/006072/FFF?text=News+2",
     "link": "Ссылка на источник"
   },
   {
@@ -24,9 +24,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости3",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/2d598d/FFF?text=News+3",
+    "img": "https://placehold.co/800x600/0090ab/FFF?text=News+3",
     "link": "Ссылка на источник"
   },
   {
@@ -34,9 +34,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости4",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/4385ee/FFF?text=News+4",
+    "img": "https://placehold.co/800x600/00c0e4/FFF?text=News+4",
     "link": "Ссылка на источник"
   },
   {
@@ -44,9 +44,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости5",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/57215e/FFF?text=News+5",
+    "img": "https://placehold.co/800x600/00f11d/FFF?text=News+5",
     "link": "Ссылка на источник"
   },
   {
@@ -54,9 +54,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости6",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/886694/FFF?text=News+6",
+    "img": "https://placehold.co/800x600/012156/FFF?text=News+6",
     "link": "Ссылка на источник"
   },
   {
@@ -64,9 +64,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости7",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/21a3a1/FFF?text=News+7",
+    "img": "https://placehold.co/800x600/01518f/FFF?text=News+7",
     "link": "Ссылка на источник"
   },
   {
@@ -74,9 +74,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости8",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/1786b5/FFF?text=News+8",
+    "img": "https://placehold.co/800x600/0181c8/FFF?text=News+8",
     "link": "Ссылка на источник"
   },
   {
@@ -84,9 +84,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости9",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/5df62c/FFF?text=News+9",
+    "img": "https://placehold.co/800x600/01b201/FFF?text=News+9",
     "link": "Ссылка на источник"
   },
   {
@@ -94,9 +94,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости10",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/4c812d/FFF?text=News+10",
+    "img": "https://placehold.co/800x600/01e23a/FFF?text=News+10",
     "link": "Ссылка на источник"
   },
   {
@@ -104,9 +104,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости11",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/70ec42/FFF?text=News+11",
+    "img": "https://placehold.co/800x600/021273/FFF?text=News+11",
     "link": "Ссылка на источник"
   },
   {
@@ -114,9 +114,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости12",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/f494d8/FFF?text=News+12",
+    "img": "https://placehold.co/800x600/0242ac/FFF?text=News+12",
     "link": "Ссылка на источник"
   },
   {
@@ -124,9 +124,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости13",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/2713f5/FFF?text=News+13",
+    "img": "https://placehold.co/800x600/0272e5/FFF?text=News+13",
     "link": "Ссылка на источник"
   },
   {
@@ -134,9 +134,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости14",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/115b7b/FFF?text=News+14",
+    "img": "https://placehold.co/800x600/02a31e/FFF?text=News+14",
     "link": "Ссылка на источник"
   },
   {
@@ -144,9 +144,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости15",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/573bd0/FFF?text=News+15",
+    "img": "https://placehold.co/800x600/02d357/FFF?text=News+15",
     "link": "Ссылка на источник"
   },
   {
@@ -154,9 +154,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости16",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/fd1550/FFF?text=News+16",
+    "img": "https://placehold.co/800x600/030390/FFF?text=News+16",
     "link": "Ссылка на источник"
   },
   {
@@ -164,9 +164,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости17",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/6dc085/FFF?text=News+17",
+    "img": "https://placehold.co/800x600/0333c9/FFF?text=News+17",
     "link": "Ссылка на источник"
   },
   {
@@ -174,9 +174,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости18",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/9ea2e5/FFF?text=News+18",
+    "img": "https://placehold.co/800x600/036402/FFF?text=News+18",
     "link": "Ссылка на источник"
   },
   {
@@ -184,9 +184,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости19",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/e1562b/FFF?text=News+19",
+    "img": "https://placehold.co/800x600/03943b/FFF?text=News+19",
     "link": "Ссылка на источник"
   },
   {
@@ -194,9 +194,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости20",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/4f1742/FFF?text=News+20",
+    "img": "https://placehold.co/800x600/03c474/FFF?text=News+20",
     "link": "Ссылка на источник"
   },
   {
@@ -204,9 +204,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости21",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/30a3cd/FFF?text=News+21",
+    "img": "https://placehold.co/800x600/03f4ad/FFF?text=News+21",
     "link": "Ссылка на источник"
   },
   {
@@ -214,9 +214,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости22",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/4f3968/FFF?text=News+22",
+    "img": "https://placehold.co/800x600/0424e6/FFF?text=News+22",
     "link": "Ссылка на источник"
   },
   {
@@ -224,9 +224,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости23",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/a320fb/FFF?text=News+23",
+    "img": "https://placehold.co/800x600/04551f/FFF?text=News+23",
     "link": "Ссылка на источник"
   },
   {
@@ -234,9 +234,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости24",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/cb323b/FFF?text=News+24",
+    "img": "https://placehold.co/800x600/048558/FFF?text=News+24",
     "link": "Ссылка на источник"
   },
   {
@@ -244,9 +244,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости25",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/9cea7f/FFF?text=News+25",
+    "img": "https://placehold.co/800x600/04b591/FFF?text=News+25",
     "link": "Ссылка на источник"
   },
   {
@@ -254,9 +254,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости26",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/c1a1a8/FFF?text=News+26",
+    "img": "https://placehold.co/800x600/04e5ca/FFF?text=News+26",
     "link": "Ссылка на источник"
   },
   {
@@ -264,9 +264,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости27",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/478ad3/FFF?text=News+27",
+    "img": "https://placehold.co/800x600/051603/FFF?text=News+27",
     "link": "Ссылка на источник"
   },
   {
@@ -274,9 +274,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости28",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/f8de8e/FFF?text=News+28",
+    "img": "https://placehold.co/800x600/05463c/FFF?text=News+28",
     "link": "Ссылка на источник"
   },
   {
@@ -284,9 +284,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости29",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/37dbde/FFF?text=News+29",
+    "img": "https://placehold.co/800x600/057675/FFF?text=News+29",
     "link": "Ссылка на источник"
   },
   {
@@ -294,9 +294,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости30",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/2a287f/FFF?text=News+30",
+    "img": "https://placehold.co/800x600/05a6ae/FFF?text=News+30",
     "link": "Ссылка на источник"
   },
   {
@@ -304,9 +304,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости31",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/041fb8/FFF?text=News+31",
+    "img": "https://placehold.co/800x600/05d6e7/FFF?text=News+31",
     "link": "Ссылка на источник"
   },
   {
@@ -314,9 +314,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости32",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/681900/FFF?text=News+32",
+    "img": "https://placehold.co/800x600/060720/FFF?text=News+32",
     "link": "Ссылка на источник"
   },
   {
@@ -324,9 +324,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости33",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/d54a80/FFF?text=News+33",
+    "img": "https://placehold.co/800x600/063759/FFF?text=News+33",
     "link": "Ссылка на источник"
   },
   {
@@ -334,9 +334,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости34",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/89e5c7/FFF?text=News+34",
+    "img": "https://placehold.co/800x600/066792/FFF?text=News+34",
     "link": "Ссылка на источник"
   },
   {
@@ -344,9 +344,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости35",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/c55c5c/FFF?text=News+35",
+    "img": "https://placehold.co/800x600/0697cb/FFF?text=News+35",
     "link": "Ссылка на источник"
   },
   {
@@ -354,9 +354,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости36",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/4ff957/FFF?text=News+36",
+    "img": "https://placehold.co/800x600/06c804/FFF?text=News+36",
     "link": "Ссылка на источник"
   },
   {
@@ -364,9 +364,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости37",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/01c6a7/FFF?text=News+37",
+    "img": "https://placehold.co/800x600/06f83d/FFF?text=News+37",
     "link": "Ссылка на источник"
   },
   {
@@ -374,9 +374,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости38",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/ea7502/FFF?text=News+38",
+    "img": "https://placehold.co/800x600/072876/FFF?text=News+38",
     "link": "Ссылка на источник"
   },
   {
@@ -384,9 +384,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости39",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/b78da2/FFF?text=News+39",
+    "img": "https://placehold.co/800x600/0758af/FFF?text=News+39",
     "link": "Ссылка на источник"
   },
   {
@@ -394,9 +394,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости40",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/ee661a/FFF?text=News+40",
+    "img": "https://placehold.co/800x600/0788e8/FFF?text=News+40",
     "link": "Ссылка на источник"
   },
   {
@@ -404,9 +404,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости41",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/e4dcf4/FFF?text=News+41",
+    "img": "https://placehold.co/800x600/07b921/FFF?text=News+41",
     "link": "Ссылка на источник"
   },
   {
@@ -414,9 +414,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости42",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/d53fde/FFF?text=News+42",
+    "img": "https://placehold.co/800x600/07e95a/FFF?text=News+42",
     "link": "Ссылка на источник"
   },
   {
@@ -424,9 +424,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости43",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/aa32dc/FFF?text=News+43",
+    "img": "https://placehold.co/800x600/081993/FFF?text=News+43",
     "link": "Ссылка на источник"
   },
   {
@@ -434,9 +434,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости44",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/515df4/FFF?text=News+44",
+    "img": "https://placehold.co/800x600/0849cc/FFF?text=News+44",
     "link": "Ссылка на источник"
   },
   {
@@ -444,9 +444,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости45",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/e235bd/FFF?text=News+45",
+    "img": "https://placehold.co/800x600/087a05/FFF?text=News+45",
     "link": "Ссылка на источник"
   },
   {
@@ -454,9 +454,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости46",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/32387e/FFF?text=News+46",
+    "img": "https://placehold.co/800x600/08aa3e/FFF?text=News+46",
     "link": "Ссылка на источник"
   },
   {
@@ -464,9 +464,9 @@
     "type": "REAL",
     "region": "eu",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости47",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/f9cced/FFF?text=News+47",
+    "img": "https://placehold.co/800x600/08da77/FFF?text=News+47",
     "link": "Ссылка на источник"
   },
   {
@@ -474,9 +474,9 @@
     "type": "FAKE",
     "region": "world",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости48",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/05c327/FFF?text=News+48",
+    "img": "https://placehold.co/800x600/090ab0/FFF?text=News+48",
     "link": "Ссылка на источник"
   },
   {
@@ -484,9 +484,9 @@
     "type": "REAL",
     "region": "ru",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости49",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/79ee34/FFF?text=News+49",
+    "img": "https://placehold.co/800x600/093ae9/FFF?text=News+49",
     "link": "Ссылка на источник"
   },
   {
@@ -494,9 +494,9 @@
     "type": "FAKE",
     "region": "usa",
     "date": "2025-12-10",
-    "text": "Заголовок новости",
+    "text": "Заголовок новости50",
     "desc": "Объяснение/Описание/Источник",
-    "img": "https://placehold.co/800x600/6efd5b/FFF?text=News+50",
+    "img": "https://placehold.co/800x600/096b22/FFF?text=News+50",
     "link": "Ссылка на источник"
   }
 ]
