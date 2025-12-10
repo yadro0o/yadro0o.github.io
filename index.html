@@ -1,355 +1,83 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panoramdle - Реальность или Панорама?</title>
-    <style>
-        :root {
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --accent-color: #3b82f6;
-            --success-color: #22c55e;
-            --error-color: #ef4444;
-            --card-bg: #ffffff;
-        }
+<script>
+    // ВАЖНО: Не используйте эмодзи в текстовых строках, они могут некорректно отображаться.
+    
+    let fullDb = [];
+    let dailySet = [];
+    let currentQ = 0;
+    let score = 0;
+    
+    const todayStr = new Date().toISOString().slice(0, 10);
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+    // --- SEEDED RANDOM (Исправленная версия) ---
+    function mulberry32(a) {
+        return function() {
+            var t = a += 0x6D2B79F5;
+            // ИСПРАВЛЕНО: Math.imult -> Math.imul
+            t = Math.imul(t ^ t >>> 15, t | 1);
+            t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
         }
-
-        /* --- UI UTILS --- */
-        .hidden { display: none !important; }
-        .btn {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    function getDateSeed(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        return Math.abs(hash);
+    }
 
-        /* --- SCREENS --- */
-        .screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
+    const seed = getDateSeed(todayStr);
+    const random = mulberry32(seed); 
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    }
 
-        /* START SCREEN */
-        .logo { font-size: 3rem; font-weight: 800; margin-bottom: 10px; color: var(--text-color); }
-        .subtitle { color: #64748b; margin-bottom: 40px; max-width: 400px; line-height: 1.5; }
-        .status-text { margin-top: 20px; font-size: 0.9rem; color: #94a3b8; }
-        .come-back-msg { 
-            margin-bottom: 20px; 
-            padding: 10px; 
-            background: #e0f2fe; 
-            color: #0369a1; 
-            border-radius: 8px; 
-            font-size: 0.9rem;
-        }
+    // --- ЗАГРУЗКА ---
+    window.addEventListener('DOMContentLoaded', async () => {
+        const startBtn = document.getElementById('start-btn');
+        const statusText = document.getElementById('status-text');
+        const comeBackMsg = document.getElementById('come-back-msg');
 
-        /* ADMIN PANEL */
-        .admin-panel {
-            margin-top: 30px;
-            padding: 10px;
-            border: 1px dashed #cbd5e1;
-            border-radius: 8px;
-            background: #f1f5f9;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-        .admin-toggle {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .date-picker-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        input[type="date"] {
-            padding: 5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-        }
-
-        /* GAME SCREEN */
-        #game-screen { justify-content: flex-start; padding: 0; }
-        
-        /* Top Section: Image + Text */
-        .card-container {
-            width: 100%;
-            height: 40%;
-            position: relative;
-            background-color: #000;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-        }
-        .news-img {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.6;
-            transition: opacity 0.3s;
-        }
-        .news-content {
-            position: relative;
-            z-index: 2;
-            padding: 20px;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: white;
-            text-align: left;
-        }
-        .region-badge {
-            display: inline-block;
-            background: var(--accent-color);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        .headline {
-            font-size: 1.3rem;
-            font-weight: 700;
-            line-height: 1.4;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Bottom Section: Buttons */
-        .controls-container {
-            height: 60%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            gap: 15px;
-            box-sizing: border-box;
-            background: white;
-        }
-        
-        .progress-bar {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-        .dot {
-            width: 8px; height: 8px;
-            background-color: #e2e8f0;
-            border-radius: 50%;
-        }
-        .dot.active { background-color: var(--accent-color); transform: scale(1.2); }
-        .dot.correct { background-color: var(--success-color); }
-        .dot.wrong { background-color: var(--error-color); }
-
-        .choice-btn {
-            flex: 1;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 16px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-color);
-        }
-        .choice-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
-        
-        .btn-real { border-color: #bfdbfe; color: #1e40af; } 
-        .btn-fake { border-color: #fecaca; color: #991b1b; }
-
-        /* OVERLAY RESULT */
-        .result-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            padding: 30px;
-            box-sizing: border-box;
-        }
-        .result-overlay.show { opacity: 1; pointer-events: auto; }
-        
-        .result-overlay.correct-bg { background: rgba(220, 252, 231, 0.98); }
-        .result-overlay.wrong-bg { background: rgba(254, 226, 226, 0.98); }
-
-        .res-tag { font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
-        .res-desc { font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; color: #334155; }
-        .source-link { color: var(--accent-color); text-decoration: underline; display: block; margin-top: 10px;}
-
-        /* FINAL SCREEN */
-        .score-big { font-size: 4rem; font-weight: 900; color: var(--accent-color); margin: 0; }
-        .rank-badge { 
-            background: #f1f5f9; padding: 5px 15px; 
-            border-radius: 20px; color: #64748b; margin-bottom: 30px; 
-        }
-
-    </style>
-</head>
-<body>
-
-    <!-- START SCREEN -->
-    <div id="start-screen" class="screen">
-        <div class="logo">Panoramdle</div>
-        <div class="subtitle">Отличите реальную новость от сатирического заголовка ИА Панорама.</div>
-        
-        <div id="come-back-msg" class="come-back-msg hidden"></div>
-        
-        <button id="start-btn" class="btn" disabled onclick="startGame()">Загрузка...</button>
-        <div id="status-text" class="status-text">Подключение к базе новостей...</div>
-
-        <!-- ADMIN PANEL (Visible for testing) -->
-        <div class="admin-panel">
-            <button class="admin-toggle" onclick="toggleAdmin()">🛠 Debug Date (Admin)</button>
-            <div id="date-controls" class="date-picker-container hidden">
-                <input type="date" id="debug-date-picker">
-                <button onclick="applyDebugDate()" style="padding: 5px;">Apply</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- GAME SCREEN -->
-    <div id="game-screen" class="screen hidden">
-        <div class="card-container">
-            <div id="news-img" class="news-img"></div>
-            <div class="news-content">
-                <span id="region-badge" class="region-badge">WORLD</span>
-                <div id="news-headline" class="headline">Загрузка заголовка...</div>
-            </div>
-        </div>
-
-        <div class="controls-container">
-            <div id="progress-bar" class="progress-bar"></div>
-            <button class="choice-btn btn-real" onclick="checkAnswer('REAL')">РЕАЛЬНОСТЬ</button>
-            <button class="choice-btn btn-fake" onclick="checkAnswer('FAKE')">ИА ПАНОРАМА</button>
-        </div>
-
-        <!-- RESULT OVERLAY -->
-        <div id="result-overlay" class="result-overlay">
-            <div id="res-tag" class="res-tag"></div>
-            <div id="res-desc" class="res-desc"></div>
-            <button class="btn" onclick="nextQuestion()">Далее</button>
-        </div>
-    </div>
-
-    <!-- FINAL SCREEN -->
-    <div id="final-screen" class="screen hidden">
-        <div class="subtitle">Ваш результат:</div>
-        <div class="score-big" id="final-score">0 / 10</div>
-        <div class="rank-badge" id="final-rank">Читатель</div>
-        <p>Возвращайтесь завтра за новой порцией новостей!</p>
-        <button class="btn" onclick="location.reload()">На главную</button>
-    </div>
-
-    <script>
-        // ВАЖНО: Не используйте эмодзи в текстовых строках, они могут некорректно отображаться.
-        
-        let fullDb = [];
-        let dailySet = [];
-        let currentQ = 0;
-        let score = 0;
-        
-        let todayStr = new Date().toISOString().slice(0, 10);
-        let random; 
-
-        // --- SEEDED RANDOM (Исправленная версия) ---
-        function mulberry32(a) {
-            return function() {
-                var t = a += 0x6D2B79F5;
-                // ИСПРАВЛЕНО: Math.imult -> Math.imul
-                t = Math.imul(t ^ t >>> 15, t | 1);
-                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        try {
+            // 1. Проверка LocalStorage
+            const lastPlayed = localStorage.getItem('lastPlayedDate');
+            if (lastPlayed === todayStr) {
+                comeBackMsg.innerHTML = "Вы уже выполнили Daily Panoramdle сегодня.<br>Но если хотите улучшить счет или просто скучно — <strong>погнали ещё раз!</strong>";
+                comeBackMsg.classList.remove('hidden');
+                startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
+            } else {
+                startBtn.innerText = "НАЧАТЬ";
             }
-        }
-        
-        function getDateSeed(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            return Math.abs(hash);
-        }
 
-        // --- Вспомогательные функции для обновления даты ---
-        function updateRandomGenerator() {
-            const seed = getDateSeed(todayStr);
-            random = mulberry32(seed);
-        }
-
-        // Инициализируем генератор первый раз
-        updateRandomGenerator();
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // --- ЗАГРУЗКА ---
-        window.addEventListener('DOMContentLoaded', async () => {
-            const startBtn = document.getElementById('start-btn');
-            const statusText = document.getElementById('status-text');
-            const comeBackMsg = document.getElementById('come-back-msg');
+            // 2. Загрузка базы
+            statusText.innerText = "Загрузка базы данных...";
             
-            // Устанавливаем дату в пикер админки
-            document.getElementById('debug-date-picker').value = todayStr;
+            // Резервная база (на случай сбоя)
+            const fallbackDb = [
+                { id: 1, type: "REAL", region: "ru", text: "В Госдуме предложили налог на бездетность.", desc: "Такое предложение звучало от депутатов.", img: "https://placehold.co/800x600/111/FFF?text=News+1", link: "" },
+                { id: 2, type: "FAKE", region: "ru", text: "Роскосмос покрасит ракеты под хохлому.", desc: "Это сатира.", img: "https://placehold.co/800x600/222/FFF?text=News+2", link: "" },
+                { id: 3, type: "REAL", region: "usa", text: "Илон Маск вызвал Путина на поединок в Twitter.", desc: "Это реально было в 2022 году.", img: "https://placehold.co/800x600/333/FFF?text=News+3", link: "" },
+                { id: 4, type: "FAKE", region: "world", text: "ООН запретила букву Z в алфавите.", desc: "Выдумка.", img: "https://placehold.co/800x600/444/FFF?text=News+4", link: "" },
+                { id: 5, type: "REAL", region: "world", text: "Австралия проиграла войну страусам эму.", desc: "Исторический факт 1932 года.", img: "https://placehold.co/800x600/555/FFF?text=News+5", link: "" },
+                { id: 6, type: "FAKE", region: "ru", text: "Сбербанк ввел комиссию за просмотр баланса глазами.", desc: "Шутка о комиссиях банков.", img: "https://placehold.co/800x600/666/FFF?text=News+6", link: "" },
+                { id: 7, type: "REAL", region: "usa", text: "Кот стал мэром города на Аляске.", desc: "Кот Стаббс правил с 1997 по 2017.", img: "https://placehold.co/800x600/777/FFF?text=News+7", link: "" },
+                { id: 8, type: "FAKE", region: "world", text: "Apple выпустила кирпич iBrick за $1000.", desc: "Сатира на цены компании.", img: "https://placehold.co/800x600/888/FFF?text=News+8", link: "" },
+                { id: 9, type: "REAL", region: "eu", text: "В Финляндии проводятся соревнования по переноске жен.", desc: "Ежегодный чемпионат мира.", img: "https://placehold.co/800x600/999/FFF?text=News+9", link: "" },
+                { id: 10, type: "FAKE", region: "eu", text: "Британские ученые доказали, что коты — жидкие.", desc: "Это старый мем, а не наука.", img: "https://placehold.co/800x600/aaa/FFF?text=News+10", link: "" },
+                { id: 11, type: "REAL", region: "ru", text: "Мужчина подал в суд на самого себя и выиграл.", desc: "Реальное дело Кертиса Гоки.", img: "https://placehold.co/800x600/bbb/FFF?text=News+11", link: "" },
+                { id: 12, type: "FAKE", region: "ru", text: "Минздрав рекомендовал лечить депрессию 'Сватами'.", desc: "Чистая сатира.", img: "https://placehold.co/800x600/ccc/FFF?text=News+12", link: "" }
+            ];
 
             try {
-                // 1. Проверка LocalStorage
-                checkHistory();
-
-                // 2. Загрузка базы
-                statusText.innerText = "Загрузка базы данных...";
-
                 const response = await fetch('news.json');
                 if (!response.ok) throw new Error("Файл news.json не найден");
-                
                 const responseText = await response.text();
                 
                 // Защита от HTML-ошибок вместо JSON
@@ -358,164 +86,125 @@
                 fullDb = JSON.parse(responseText);
                 statusText.innerHTML = `База загружена (${fullDb.length} новостей)`;
                 statusText.style.color = "#22c55e";
-
-                // 3. Генерация (только если загрузка успешна)
-                generateDailySet();
-                // Разблокируем кнопку только при успехе
-                startBtn.disabled = false;
-
             } catch (e) {
-                console.error("Критическая ошибка:", e);
-                statusText.innerHTML = `Ошибка загрузки: ${e.message}. Проверьте консоль.`;
-                statusText.style.color = "#ef4444";
-                startBtn.innerText = "ОШИБКА";
-                // Не разблокируем кнопку startBtn, чтобы нельзя было начать без данных
+                console.warn("Сбой загрузки news.json, используем резерв:", e);
+                fullDb = fallbackDb;
+                statusText.innerHTML = `Не удалось загрузить news.json. Запущен демо-режим с ${fallbackDb.length} вопросами.`;
+                statusText.style.color = "#f59e0b";
             }
-        });
 
-        // --- ГЕНЕРАЦИЯ ---
-        function generateDailySet() {
-            if (!fullDb.length) return;
+            // 3. Генерация
+            generateDailySet();
             
-            // Клонируем базу чтобы не портить оригинал при шаффле
-            let dbCopy = JSON.parse(JSON.stringify(fullDb));
-            
-            const realNews = dbCopy.filter(item => item.type === 'REAL');
-            const fakeNews = dbCopy.filter(item => item.type === 'FAKE');
-
-            shuffleArray(realNews);
-            shuffleArray(fakeNews);
-
-            const realCount = 4 + Math.floor(random() * 3);
-            const fakeCount = 10 - realCount;
-
-            const safeRealCount = Math.min(realCount, realNews.length);
-            const safeFakeCount = Math.min(fakeCount, fakeNews.length);
-
-            dailySet = [...realNews.slice(0, safeRealCount), ...fakeNews.slice(0, safeFakeCount)];
-            shuffleArray(dailySet);
+        } catch (globalError) {
+            console.error("Критическая ошибка:", globalError);
+            statusText.innerHTML = `Ошибка: ${globalError.message}`;
+            statusText.style.color = "red";
+        } finally {
+            // 4. Эта строка включит кнопку в любом случае
+            startBtn.disabled = false;
         }
+    });
 
-        // --- ИГРА ---
-        function startGame() {
-            if(dailySet.length === 0) return alert("Вопросы не загружены!");
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            initDots();
-            loadQuestion();
+    // --- ГЕНЕРАЦИЯ ---
+    function generateDailySet() {
+        const realNews = fullDb.filter(item => item.type === 'REAL');
+        const fakeNews = fullDb.filter(item => item.type === 'FAKE');
+
+        shuffleArray(realNews);
+        shuffleArray(fakeNews);
+
+        const realCount = 4 + Math.floor(random() * 3);
+        const fakeCount = 10 - realCount;
+
+        const safeRealCount = Math.min(realCount, realNews.length);
+        const safeFakeCount = Math.min(fakeCount, fakeNews.length);
+
+        dailySet = [...realNews.slice(0, safeRealCount), ...fakeNews.slice(0, safeFakeCount)];
+        shuffleArray(dailySet);
+    }
+
+    // --- ИГРА ---
+    function startGame() {
+        if(dailySet.length === 0) return alert("Вопросы не загружены!");
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        initDots();
+        loadQuestion();
+    }
+
+    function initDots() {
+        const container = document.getElementById('progress-bar');
+        container.innerHTML = '';
+        for(let i=0; i<dailySet.length; i++) {
+            let d = document.createElement('div');
+            d.className = 'dot';
+            d.id = 'dot-'+i;
+            container.appendChild(d);
         }
+    }
 
-        function initDots() {
-            const container = document.getElementById('progress-bar');
-            container.innerHTML = '';
-            for(let i=0; i<dailySet.length; i++) {
-                let d = document.createElement('div');
-                d.className = 'dot';
-                d.id = 'dot-'+i;
-                container.appendChild(d);
-            }
-        }
-
-        function loadQuestion() {
-            if (currentQ >= dailySet.length) return showResults();
-            const q = dailySet[currentQ];
-            document.getElementById('news-headline').innerText = q.text;
-            document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
-            const region = q.region ? q.region.toUpperCase() : "WORLD";
-            document.getElementById('region-badge').innerText = region;
-            
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            if(document.getElementById('dot-'+currentQ)) {
-                document.getElementById('dot-'+currentQ).classList.add('active');
-            }
-        }
-
-        function checkAnswer(userChoice) {
-            const q = dailySet[currentQ];
-            const isCorrect = userChoice === q.type;
-            const overlay = document.getElementById('result-overlay');
-            const tag = document.getElementById('res-tag');
-            const desc = document.getElementById('res-desc');
-            const dot = document.getElementById('dot-'+currentQ);
-
-            overlay.className = ''; 
-            if (isCorrect) {
-                overlay.classList.add('show', 'correct-bg');
-                tag.innerText = "ВЕРНО!";
-                score++;
-                if(dot) dot.classList.add('correct');
-            } else {
-                overlay.classList.add('show', 'wrong-bg');
-                tag.innerText = "ОШИБКА!";
-                if(dot) dot.classList.add('wrong');
-            }
-            
-            let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br>${q.desc}`;
-            if (q.link && q.link.length > 5) {
-                // Удален эмодзи из ссылки
-                content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник</a>`;
-            }
-            desc.innerHTML = content;
-        }
-
-        function nextQuestion() {
-            document.getElementById('result-overlay').classList.remove('show');
-            currentQ++;
-            loadQuestion();
-        }
-
-        function showResults() {
-            localStorage.setItem('lastPlayedDate', todayStr);
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('final-screen').classList.remove('hidden');
-            
-            document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
-            
-            const percent = score / dailySet.length;
-            let rank = "Новичок интернета";
-            if(percent > 0.4) rank = "Опытный серфер";
-            if(percent > 0.7) rank = "Грандмастер постиронии";
-            if(percent === 1) rank = "Бог новостной ленты";
-            
-            document.getElementById('final-rank').innerText = rank;
-        }
-
-        // --- ФУНКЦИИ АДМИН ПАНЕЛИ И ПРОВЕРКИ ИСТОРИИ ---
+    function loadQuestion() {
+        if (currentQ >= dailySet.length) return showResults();
+        const q = dailySet[currentQ];
+        document.getElementById('news-headline').innerText = q.text;
+        document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
+        const region = q.region ? q.region.toUpperCase() : "WORLD";
+        document.getElementById('region-badge').innerText = region;
         
-        function checkHistory() {
-            const lastPlayed = localStorage.getItem('lastPlayedDate');
-            const startBtn = document.getElementById('start-btn');
-            const comeBackMsg = document.getElementById('come-back-msg');
-            
-            if (lastPlayed === todayStr) {
-                comeBackMsg.innerHTML = "Вы уже выполнили Daily Panoramdle сегодня.<br>Но если хотите улучшить счет или просто скучно — <strong>погнали ещё раз!</strong>";
-                comeBackMsg.classList.remove('hidden');
-                startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
-            } else {
-                comeBackMsg.classList.add('hidden');
-                startBtn.innerText = "НАЧАТЬ";
-            }
+        document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+        if(document.getElementById('dot-'+currentQ)) {
+            document.getElementById('dot-'+currentQ).classList.add('active');
         }
+    }
 
-        function toggleAdmin() {
-            const el = document.getElementById('date-controls');
-            el.classList.toggle('hidden');
+    function checkAnswer(userChoice) {
+        const q = dailySet[currentQ];
+        const isCorrect = userChoice === q.type;
+        const overlay = document.getElementById('result-overlay');
+        const tag = document.getElementById('res-tag');
+        const desc = document.getElementById('res-desc');
+        const dot = document.getElementById('dot-'+currentQ);
+
+        overlay.className = ''; 
+        if (isCorrect) {
+            overlay.classList.add('show', 'correct-bg');
+            tag.innerText = "ВЕРНО!";
+            score++;
+            if(dot) dot.classList.add('correct');
+        } else {
+            overlay.classList.add('show', 'wrong-bg');
+            tag.innerText = "ОШИБКА!";
+            if(dot) dot.classList.add('wrong');
         }
-
-        function applyDebugDate() {
-            const picker = document.getElementById('debug-date-picker');
-            if (!picker.value) return;
-
-            todayStr = picker.value;
-            currentQ = 0;
-            score = 0;
-            
-            updateRandomGenerator(); // Обновляем сид
-            generateDailySet();      // Перегенерируем вопросы
-            checkHistory();          // Обновляем статус кнопки "Начать"
-            
-            alert(`Дата изменена на ${todayStr}.\nВопросы перегенерированы.`);
+        
+        let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br>${q.desc}`;
+        if (q.link && q.link.length > 5) {
+            // Удален эмодзи из ссылки
+            content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник</a>`;
         }
-    </script>
-</body>
-</html>
+        desc.innerHTML = content;
+    }
+
+    function nextQuestion() {
+        document.getElementById('result-overlay').classList.remove('show');
+        currentQ++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        localStorage.setItem('lastPlayedDate', todayStr);
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('final-screen').classList.remove('hidden');
+        
+        document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
+        
+        const percent = score / dailySet.length;
+        let rank = "Новичок интернета";
+        if(percent > 0.4) rank = "Опытный серфер";
+        if(percent > 0.7) rank = "Грандмастер постиронии";
+        if(percent === 1) rank = "Бог новостной ленты";
+        
+        document.getElementById('final-rank').innerText = rank;
+    }
+</script>
