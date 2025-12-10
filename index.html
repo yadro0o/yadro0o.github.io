@@ -26,8 +26,8 @@
         .hidden { display: none !important; }
 
         /* Главная */
-        #start-screen { background: #000; text-align: center; padding: 20px; }
-        h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        #start-screen { background: #000; text-align: center; padding: 20px; overflow-y: auto; }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
         .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
         
         .btn-start {
@@ -45,6 +45,16 @@
             background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
             border: 1px dashed #444; max-width: 400px;
         }
+
+        /* Админ панель */
+        #admin-panel {
+            margin-top: 40px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+            text-align: left; max-width: 300px;
+        }
+        #admin-panel h3 { margin-bottom: 10px; font-size: 1rem; color: #888; text-transform: uppercase; }
+        #admin-panel input { width: 100%; padding: 8px; margin-bottom: 10px; background: #333; border: none; color: #fff; border-radius: 4px; }
+        #admin-panel button { padding: 5px 15px; cursor: pointer; background: #444; color: #fff; border: none; border-radius: 4px; }
+        #admin-panel button:hover { background: #555; }
 
         /* Игра */
         #game-screen { display: flex; flex-direction: column; }
@@ -119,9 +129,24 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        #final-screen { background: #111; text-align: center; }
-        .final-score { font-size: 6rem; font-weight: bold; color: var(--success-color); }
-        .final-rank { font-size: 2rem; color: #aaa; margin-bottom: 30px; }
+        /* Финал */
+        #final-screen { background: #111; text-align: center; overflow-y: auto; justify-content: flex-start; padding: 40px 20px; }
+        .final-score { font-size: 4rem; font-weight: bold; color: var(--success-color); margin-top: 20px; }
+        .final-rank { font-size: 1.5rem; color: #aaa; margin-bottom: 30px; }
+        
+        .results-list {
+            width: 100%; max-width: 600px; margin: 0 auto 30px;
+            text-align: left; background: #1a1a1a; border-radius: 10px; padding: 20px;
+        }
+        .result-item {
+            padding: 10px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .res-icon { font-size: 1.2rem; margin-right: 10px; }
+        .res-text { flex-grow: 1; font-size: 0.9rem; margin-right: 10px; }
+        .res-link { color: var(--news-color); text-decoration: none; font-size: 0.8rem; border: 1px solid #333; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+        .res-link:hover { background: #333; }
+        
     </style>
 </head>
 <body>
@@ -132,6 +157,14 @@
         <button class="btn-start" onclick="startGame()" id="start-btn" disabled>Загрузка...</button>
         <p class="status-text" id="status-text">Подключение к базе новостей...</p>
         <div class="timer-msg hidden" id="come-back-msg"></div>
+
+        <!-- Админ панель -->
+        <div id="admin-panel">
+            <h3>Dev Tools</h3>
+            <label style="font-size:0.8rem; color:#888;">Дата симуляции:</label>
+            <input type="date" id="dev-date-input">
+            <button onclick="applyDevDate()">Применить и сбросить</button>
+        </div>
     </div>
 
     <!-- Экран 2: Игра -->
@@ -160,19 +193,28 @@
         <h2>Результат дня</h2>
         <div class="final-score" id="final-score">0/10</div>
         <div class="final-rank" id="final-rank">Звание</div>
-        <button class="btn-start" onclick="location.reload()" style="margin-top: 20px;">В МЕНЮ</button>
+        
+        <div class="results-list" id="results-list">
+            <!-- Сюда попадут результаты -->
+        </div>
+
+        <button class="btn-start" onclick="location.reload()">В МЕНЮ</button>
     </div>
 
     <script>
-        // Код игры Panoramdle (без резервной базы)
-        // ВАЖНО: Не используйте эмодзи в текстовых строках.
+        // Код игры Panoramdle
         
         let fullDb = [];
         let dailySet = [];
+        let userAnswers = []; // Хранит историю ответов для финала
         let currentQ = 0;
         let score = 0;
         
-        const todayStr = new Date().toISOString().slice(0, 10);
+        // По умолчанию берем сегодняшнюю дату, но если есть в localStorage (от админки) - берем её
+        let todayStr = localStorage.getItem('devOverrideDate') || new Date().toISOString().slice(0, 10);
+        
+        // Установка даты в инпут админки
+        document.getElementById('dev-date-input').value = todayStr;
 
         // --- SEEDED RANDOM ---
         function mulberry32(a) {
@@ -204,6 +246,17 @@
             return array;
         }
 
+        // --- АДМИНКА ---
+        function applyDevDate() {
+            const val = document.getElementById('dev-date-input').value;
+            if(val) {
+                localStorage.setItem('devOverrideDate', val);
+                // Очищаем историю игры для этой даты, чтобы можно было перепройти
+                localStorage.removeItem('lastPlayedDate'); 
+                location.reload();
+            }
+        }
+
         // --- ЗАГРУЗКА ---
         window.addEventListener('DOMContentLoaded', async () => {
             const startBtn = document.getElementById('start-btn');
@@ -212,9 +265,12 @@
 
             try {
                 // 1. Проверка LocalStorage
+                // Сравниваем не просто с "сегодня", а с "активной датой" (которая может быть изменена через админку)
                 const lastPlayed = localStorage.getItem('lastPlayedDate');
+                
+                // Если дата в памяти совпадает с текущей активной датой
                 if (lastPlayed === todayStr) {
-                    comeBackMsg.innerHTML = "Вы уже выполнили Daily Panoramdle сегодня.<br>Но если хотите улучшить счет или просто скучно — <strong>погнали ещё раз!</strong>";
+                    comeBackMsg.innerHTML = `Вы уже играли за дату <strong>${todayStr}</strong>.<br>Сбросьте дату в Dev Tools ниже, чтобы сыграть за другой день.`;
                     comeBackMsg.classList.remove('hidden');
                     startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
                 } else {
@@ -227,41 +283,37 @@
                 const response = await fetch('news.json');
 
                 if (!response.ok) {
-                    throw new Error(`Ошибка загрузки news.json: ${response.status} ${response.statusText}`);
+                    throw new Error(`Ошибка загрузки news.json: ${response.status}`);
                 }
 
                 const responseText = await response.text();
                 
-                // Проверка на HTML вместо JSON
                 if (responseText.trim().startsWith('<')) {
-                    throw new Error("Сервер вернул HTML вместо JSON. Проверьте путь к файлу news.json и настройки CORS/GitHub Pages.");
+                    throw new Error("Сервер вернул HTML вместо JSON.");
                 }
 
                 try {
                     fullDb = JSON.parse(responseText);
                 } catch (jsonErr) {
-                    throw new Error(`Ошибка синтаксиса в news.json: ${jsonErr.message}`);
+                    throw new Error(`Ошибка синтаксиса JSON: ${jsonErr.message}`);
                 }
 
                 if (!Array.isArray(fullDb) || fullDb.length === 0) {
-                    throw new Error("Файл news.json пуст или не является массивом.");
+                    throw new Error("Файл news.json пуст.");
                 }
 
-                statusText.innerHTML = `База загружена`;
+                statusText.innerHTML = `База: ${fullDb.length} новостей. <br>Дата сида: ${todayStr}`;
                 statusText.style.color = "#22c55e";
 
                 // 3. Генерация
                 generateDailySet();
                 
-                // Если всё прошло успешно - активируем кнопку
                 startBtn.disabled = false;
                 
             } catch (globalError) {
-                console.error("Критическая ошибка:", globalError);
-                statusText.innerHTML = `<strong>КРИТИЧЕСКАЯ ОШИБКА:</strong><br>${globalError.message}`;
+                console.error(globalError);
+                statusText.innerHTML = `ОШИБКА: ${globalError.message}`;
                 statusText.style.color = "#ef4444";
-                
-                // Кнопка остается заблокированной (disabled), чтобы нельзя было начать игру без данных
                 startBtn.innerText = "ОШИБКА";
                 startBtn.style.background = "#333";
             }
@@ -327,6 +379,14 @@
             const desc = document.getElementById('res-desc');
             const dot = document.getElementById('dot-'+currentQ);
 
+            // Сохраняем результат для финального списка
+            userAnswers.push({
+                text: q.text,
+                isCorrect: isCorrect,
+                link: q.link,
+                type: q.type
+            });
+
             overlay.className = ''; 
             if (isCorrect) {
                 overlay.classList.add('show', 'correct-bg');
@@ -353,7 +413,9 @@
         }
 
         function showResults() {
+            // Сохраняем факт игры именно за эту дату (todayStr)
             localStorage.setItem('lastPlayedDate', todayStr);
+
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
             
@@ -366,6 +428,29 @@
             if(percent === 1) rank = "Бог новостной ленты";
             
             document.getElementById('final-rank').innerText = rank;
+
+            // Генерация списка результатов
+            const listContainer = document.getElementById('results-list');
+            listContainer.innerHTML = '';
+            
+            userAnswers.forEach(ans => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                
+                const icon = ans.isCorrect ? '<span style="color:#22c55e">✔</span>' : '<span style="color:#ef4444">✘</span>';
+                
+                let linkHtml = '';
+                if(ans.link && ans.link.length > 5) {
+                    linkHtml = `<a href="${ans.link}" target="_blank" class="res-link">Источник</a>`;
+                }
+
+                item.innerHTML = `
+                    <div class="res-icon">${icon}</div>
+                    <div class="res-text">${ans.text}</div>
+                    ${linkHtml}
+                `;
+                listContainer.appendChild(item);
+            });
         }
     </script>
 </body>
