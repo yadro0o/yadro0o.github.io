@@ -3,99 +3,180 @@
     "id": 1,
     "type": "REAL",
     "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности. Почему это правда?",
     "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "link": ""
   },
   {
     "id": 2,
-    "type": "REAL",
+    "type": "FAKE",
     "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/222/FFF?text=News+2",
+    "link": ""
   },
-    {
+  {
     "id": 3,
     "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/333/FFF?text=News+3",
+    "link": ""
   },
-    {
+  {
     "id": 4,
-    "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "type": "FAKE",
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это фейк.",
+    "img": "https://placehold.co/800x600/444/FFF?text=News+4",
+    "link": ""
   },
-    {
+  {
     "id": 5,
     "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "region": "eu",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (Европа)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/555/FFF?text=News+5",
+    "link": ""
   },
   {
     "id": 6,
-    "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "type": "FAKE",
+    "region": "eu",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (Европа)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/666/FFF?text=News+6",
+    "link": ""
   },
-    {
+  {
     "id": 7,
     "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "region": "world",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (Мир)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/777/FFF?text=News+7",
+    "link": ""
   },
-    {
+  {
     "id": 8,
-    "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "type": "FAKE",
+    "region": "world",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (Мир)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/888/FFF?text=News+8",
+    "link": ""
   },
-    {
+  {
     "id": 9,
     "type": "REAL",
     "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/999/FFF?text=News+9",
+    "link": ""
   },
-    {
+  {
     "id": 10,
-    "type": "REAL",
+    "type": "FAKE",
     "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/aaa/FFF?text=News+10",
+    "link": ""
   },
-    {
+  {
     "id": 11,
     "type": "REAL",
-    "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
-    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/bbb/FFF?text=News+11",
+    "link": ""
   },
+  {
+    "id": 12,
+    "type": "FAKE",
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это фейк.",
+    "img": "https://placehold.co/800x600/ccc/FFF?text=News+12",
+    "link": ""
+  },
+  {
+    "id": 13,
+    "type": "REAL",
+    "region": "eu",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (Европа)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/ddd/FFF?text=News+13",
+    "link": ""
+  },
+  {
+    "id": 14,
+    "type": "FAKE",
+    "region": "eu",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (Европа)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/eee/FFF?text=News+14",
+    "link": ""
+  },
+  {
+    "id": 15,
+    "type": "REAL",
+    "region": "world",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (Мир)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/123/FFF?text=News+15",
+    "link": ""
+  },
+  {
+    "id": 16,
+    "type": "FAKE",
+    "region": "world",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (Мир)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/234/FFF?text=News+16",
+    "link": ""
+  },
+  {
+    "id": 17,
+    "type": "REAL",
+    "region": "ru",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/345/FFF?text=News+17",
+    "link": ""
+  },
+  {
+    "id": 18,
+    "type": "FAKE",
+    "region": "ru",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (РФ)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это сатира.",
+    "img": "https://placehold.co/800x600/456/FFF?text=News+18",
+    "link": ""
+  },
+  {
+    "id": 19,
+    "type": "REAL",
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок правдивой новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Подробности.",
+    "img": "https://placehold.co/800x600/567/FFF?text=News+19",
+    "link": ""
+  },
+  {
+    "id": 20,
+    "type": "FAKE",
+    "region": "usa",
+    "text": "ЗАПОЛНИ МЕНЯ: Заголовок выдуманной новости (США)",
+    "desc": "ЗАПОЛНИ МЕНЯ: Это фейк.",
+    "img": "https://placehold.co/800x600/678/FFF?text=News+20",
+    "link": ""
+  }
 ]
