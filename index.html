@@ -177,8 +177,9 @@
         function mulberry32(a) {
             return function() {
                 var t = a += 0x6D2B79F5;
-                t = Math.imult(t ^ t >>> 15, t | 1);
-                t ^= t + Math.imult(t ^ t >>> 7, t | 61);
+                // ИСПРАВЛЕНО: Math.imult -> Math.imul
+                t = Math.imul(t ^ t >>> 15, t | 1);
+                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
                 return ((t ^ t >>> 14) >>> 0) / 4294967296;
             }
         }
@@ -239,21 +240,17 @@
                 
                 const response = await fetch('news.json');
 
-                // Проверяем HTTP статус
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}. Файл news.json не найден по пути "${window.location.href.replace('index.html', '')}news.json". Проверьте имя файла и расположение.`);
                 }
 
-                // Проверяем Content-Type
                 const contentType = response.headers.get("content-type");
-                const responseText = await response.text(); // Читаем как текст для анализа
+                const responseText = await response.text(); 
 
-                // Если сервер вернул HTML вместо JSON
                 if (responseText.trim().startsWith('<')) {
                     throw new Error(`Сервер вернул HTML вместо JSON. Возможные причины:\n1. Файл открыт через file:// (используйте локальный сервер)\n2. GitHub Pages не активирован в Settings → Pages\n3. Файл называется не "news.json" или лежит не в корне репозитория.\n\n🔧 Решение: Используйте Live Server в VS Code или загрузите на GitHub.`);
                 }
 
-                // Парсим JSON
                 try {
                     fullDb = JSON.parse(responseText);
                 } catch (jsonError) {
@@ -270,7 +267,6 @@
             } catch (error) {
                 console.error("❌ ОШИБКА ЗАГРУЗКИ:", error);
                 
-                // Используем резервную базу
                 fullDb = fallbackDb;
                 statusText.innerHTML = `⚠️ Не удалось загрузить news.json. Запущен демо-режим с ${fallbackDb.length} тестовыми вопросами.<br><br><small style="color:#ef4444">${error.message}</small>`;
                 statusText.style.color = "#f59e0b";
