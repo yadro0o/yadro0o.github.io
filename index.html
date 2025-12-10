@@ -164,7 +164,8 @@
     </div>
 
     <script>
-        // Код игры Panoramdle
+        // Код игры Panoramdle (без резервной базы)
+        // ВАЖНО: Не используйте эмодзи в текстовых строках.
         
         let fullDb = [];
         let dailySet = [];
@@ -223,47 +224,46 @@
                 // 2. Загрузка базы
                 statusText.innerText = "Загрузка базы данных...";
                 
-                // Резервная база (на случай сбоя)
-                const fallbackDb = [
-                    { id: 1, type: "REAL", region: "ru", text: "В Госдуме предложили налог на бездетность.", desc: "Такое предложение звучало от депутатов.", img: "https://placehold.co/800x600/111/FFF?text=News+1", link: "" },
-                    { id: 2, type: "FAKE", region: "ru", text: "Роскосмос покрасит ракеты под хохлому.", desc: "Это сатира.", img: "https://placehold.co/800x600/222/FFF?text=News+2", link: "" },
-                    { id: 3, type: "REAL", region: "usa", text: "Илон Маск вызвал Путина на поединок в Twitter.", desc: "Это реально было в 2022 году.", img: "https://placehold.co/800x600/333/FFF?text=News+3", link: "" },
-                    { id: 4, type: "FAKE", region: "world", text: "ООН запретила букву Z в алфавите.", desc: "Выдумка.", img: "https://placehold.co/800x600/444/FFF?text=News+4", link: "" },
-                    { id: 5, type: "REAL", region: "world", text: "Австралия проиграла войну страусам эму.", desc: "Исторический факт 1932 года.", img: "https://placehold.co/800x600/555/FFF?text=News+5", link: "" },
-                    { id: 6, type: "FAKE", region: "ru", text: "Сбербанк ввел комиссию за просмотр баланса глазами.", desc: "Шутка о комиссиях банков.", img: "https://placehold.co/800x600/666/FFF?text=News+6", link: "" },
-                    { id: 7, type: "REAL", region: "usa", text: "Кот стал мэром города на Аляске.", desc: "Кот Стаббс правил с 1997 по 2017.", img: "https://placehold.co/800x600/777/FFF?text=News+7", link: "" },
-                    { id: 8, type: "FAKE", region: "world", text: "Apple выпустила кирпич iBrick за $1000.", desc: "Сатира на цены компании.", img: "https://placehold.co/800x600/888/FFF?text=News+8", link: "" },
-                    { id: 9, type: "REAL", region: "eu", text: "В Финляндии проводятся соревнования по переноске жен.", desc: "Ежегодный чемпионат мира.", img: "https://placehold.co/800x600/999/FFF?text=News+9", link: "" },
-                    { id: 10, type: "FAKE", region: "eu", text: "Британские ученые доказали, что коты — жидкие.", desc: "Это старый мем, а не наука.", img: "https://placehold.co/800x600/aaa/FFF?text=News+10", link: "" },
-                    { id: 11, type: "REAL", region: "ru", text: "Мужчина подал в суд на самого себя и выиграл.", desc: "Реальное дело Кертиса Гоки.", img: "https://placehold.co/800x600/bbb/FFF?text=News+11", link: "" },
-                    { id: 12, type: "FAKE", region: "ru", text: "Минздрав рекомендовал лечить депрессию 'Сватами'.", desc: "Чистая сатира.", img: "https://placehold.co/800x600/ccc/FFF?text=News+12", link: "" }
-                ];
+                const response = await fetch('news.json');
 
-                try {
-                    const response = await fetch('news.json');
-                    if (!response.ok) throw new Error("Файл news.json не найден");
-                    const responseText = await response.text();
-                    
-                    if (responseText.trim().startsWith('<')) throw new Error("Сервер вернул HTML");
-
-                    fullDb = JSON.parse(responseText);
-                    statusText.innerHTML = `База загружена (${fullDb.length} новостей)`;
-                    statusText.style.color = "#22c55e";
-                } catch (e) {
-                    console.warn("Сбой загрузки news.json, используем резерв:", e);
-                    fullDb = fallbackDb;
-                    statusText.innerHTML = `Не удалось загрузить news.json. Запущен демо-режим.`;
-                    statusText.style.color = "#f59e0b";
+                if (!response.ok) {
+                    throw new Error(`Ошибка загрузки news.json: ${response.status} ${response.statusText}`);
                 }
 
+                const responseText = await response.text();
+                
+                // Проверка на HTML вместо JSON
+                if (responseText.trim().startsWith('<')) {
+                    throw new Error("Сервер вернул HTML вместо JSON. Проверьте путь к файлу news.json и настройки CORS/GitHub Pages.");
+                }
+
+                try {
+                    fullDb = JSON.parse(responseText);
+                } catch (jsonErr) {
+                    throw new Error(`Ошибка синтаксиса в news.json: ${jsonErr.message}`);
+                }
+
+                if (!Array.isArray(fullDb) || fullDb.length === 0) {
+                    throw new Error("Файл news.json пуст или не является массивом.");
+                }
+
+                statusText.innerHTML = `База загружена (${fullDb.length} новостей)`;
+                statusText.style.color = "#22c55e";
+
+                // 3. Генерация
                 generateDailySet();
+                
+                // Если всё прошло успешно - активируем кнопку
+                startBtn.disabled = false;
                 
             } catch (globalError) {
                 console.error("Критическая ошибка:", globalError);
-                statusText.innerHTML = `Ошибка: ${globalError.message}`;
-                statusText.style.color = "red";
-            } finally {
-                startBtn.disabled = false;
+                statusText.innerHTML = `<strong>КРИТИЧЕСКАЯ ОШИБКА:</strong><br>${globalError.message}`;
+                statusText.style.color = "#ef4444";
+                
+                // Кнопка остается заблокированной (disabled), чтобы нельзя было начать игру без данных
+                startBtn.innerText = "ОШИБКА";
+                startBtn.style.background = "#333";
             }
         });
 
