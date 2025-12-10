@@ -26,7 +26,7 @@
         .hidden { display: none !important; }
 
         /* Главная */
-        #start-screen { background: #000; text-align: center; padding: 20px; overflow-y: auto; }
+        #start-screen { background: #000; text-align: center; padding: 20px; overflow-y: auto; position: relative; }
         h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
         .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
         
@@ -49,11 +49,32 @@
         #admin-panel {
             margin-top: 40px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
             text-align: left; max-width: 300px;
+            display: none;  /* скрыто по умолчанию */
         }
+        #admin-panel.visible { display: block; }
         #admin-panel h3 { margin-bottom: 10px; font-size: 1rem; color: #888; text-transform: uppercase; }
         #admin-panel input { width: 100%; padding: 8px; margin-bottom: 10px; background: #333; border: none; color: #fff; border-radius: 4px; }
         #admin-panel button { padding: 5px 15px; cursor: pointer; background: #444; color: #fff; border: none; border-radius: 4px; }
         #admin-panel button:hover { background: #555; }
+
+        /* Иконка Telegram снизу слева */
+        .tg-link {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #229ED9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
 
         /* ИГРОВОЙ ЭКРАН - ОБЩЕЕ */
         #game-screen { display: flex; flex-direction: column; width: 100%; height: 100%; }
@@ -74,7 +95,7 @@
             backdrop-filter: blur(5px);
         }
 
-        /* --- РЕЖИМ 1: TEXT (Классика) --- */
+        /* --- РЕЖИМ 1: TEXT --- */
         #game-screen.mode-text .news-display {
             position: relative; height: 35vh; width: 100%;
             background-size: cover; background-position: center;
@@ -87,8 +108,13 @@
         }
         #game-screen.mode-text .news-text {
             position: relative; z-index: 2; padding: 20px; width: 100%;
-            text-align: center; font-size: 1.4rem; font-weight: 600; text-shadow: 0 2px 4px #000;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 2px 4px #000;
             margin-bottom: 10px;
+            /* базовый крупный размер */
+            font-size: 2.2rem;
+            line-height: 1.25;
         }
         #game-screen.mode-text .controls-area { height: 65vh; width: 100%; display: flex; }
         #game-screen.mode-text .choice-btn {
@@ -102,64 +128,63 @@
         #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
         #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
-        /* --- РЕЖИМ 2: IMAGE (Исправленный) --- */
+        /* --- РЕЖИМ 2: IMAGE --- */
         #game-screen.mode-image {
-            display: flex; flex-direction: row; /* Горизонтальная раскладка */
+            display: flex; flex-direction: row;
             background: #111;
         }
 
         #game-screen.mode-image .controls-area {
-            display: contents; /* Кнопки становятся частью сетки флекса */
+            display: contents;
         }
         
         #game-screen.mode-image .choice-btn {
-            width: 25%; /* Широкие кнопки (было 10%) */
+            width: 25%;
             height: 100vh;
             border: none; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             font-size: 1.8rem; font-weight: 900; letter-spacing: 2px;
             text-transform: uppercase;
-            transition: all 0.4s ease; /* Плавное расширение */
+            transition: all 0.4s ease;
             z-index: 20;
             color: rgba(255,255,255,0.6);
-            /* Убираем вертикальный текст, делаем горизонтальным */
             writing-mode: horizontal-tb;
         }
 
         #game-screen.mode-image .choice-btn span {
             display: block;
-            transform: none; /* Убираем поворот текста */
+            transform: none;
         }
 
         #game-screen.mode-image .btn-left { 
-            order: 1; /* Слева */
+            order: 1;
             background: #1a1a1a; border-right: 1px solid #333; 
         }
         #game-screen.mode-image .btn-right { 
-            order: 3; /* Справа */
+            order: 3;
             background: #1a1a1a; border-left: 1px solid #333;
         }
 
-        /* Эффект наведения - кнопка расширяется */
         #game-screen.mode-image .btn-left:hover { 
             background: var(--news-color); color: #fff; 
-            width: 35%; /* Становится еще шире */
+            width: 35%;
         }
         #game-screen.mode-image .btn-right:hover { 
             background: var(--panorama-color); color: #fff; 
-            width: 35%; /* Становится еще шире */
+            width: 35%;
         }
 
-        /* Центральная область */
+        /* Центральная область в режиме image */
         #game-screen.mode-image .news-display {
-            order: 2; flex-grow: 1; /* Занимает все оставшееся место по центру */
+            order: 2; flex-grow: 1;
             position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: #000;
+            background: #000; /* будет перекрашиваться из JS */
+            transition: background-color 0.25s ease;
         }
         
         #game-screen.mode-image .img-container {
-            width: 90%; /* Широкая картинка внутри центральной колонки */
+            width: 90%;
             max-height: 50vh;
             border: 2px solid #333; border-radius: 10px; overflow: hidden;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
@@ -226,7 +251,7 @@
 <body>
     <!-- Экран 1: Старт -->
     <div id="start-screen" class="screen">
-        <h1>Panoramdle</h1>
+        <h1 id="logo">Panoramdle</h1>
         <div class="subtitle">Daily Reality Check</div>
         <button class="btn-start" onclick="startGame()" id="start-btn" disabled>Загрузка...</button>
         <p class="status-text" id="status-text">Подключение к базе новостей...</p>
@@ -238,6 +263,8 @@
             <input type="date" id="dev-date-input">
             <button onclick="applyDevDate()">Применить и сбросить</button>
         </div>
+
+        <a href="https://t.me/thepanoramdle" target="_blank" rel="noopener" class="tg-link">TG</a>
     </div>
 
     <!-- Экран 2: Игра -->
@@ -248,16 +275,13 @@
 
         <div class="news-display" id="news-display-area">
             <div class="news-overlay"></div>
-            <!-- Для IMAGE режима -->
             <div class="img-container hidden" id="img-container">
                 <img src="" class="main-image" id="main-image-el">
             </div>
-            
             <div class="news-text" id="news-headline">Загрузка...</div>
         </div>
 
         <div class="controls-area">
-            <!-- Убрали лишние span, так как текст теперь стандартный -->
             <button class="choice-btn btn-left" onclick="checkAnswer('REAL')"><span>НОВОСТЬ</span></button>
             <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')"><span>ПАНОРАМА</span></button>
         </div>
@@ -287,7 +311,6 @@
         let score = 0;
         
         let todayStr = localStorage.getItem('devOverrideDate') || new Date().toISOString().slice(0, 10);
-        document.getElementById('dev-date-input').value = todayStr;
 
         function mulberry32(a) {
             return function() {
@@ -329,6 +352,39 @@
             const startBtn = document.getElementById('start-btn');
             const statusText = document.getElementById('status-text');
             const comeBackMsg = document.getElementById('come-back-msg');
+            const devDateInput = document.getElementById('dev-date-input');
+            devDateInput.value = todayStr;
+
+            // Показ/скрытие Dev Tools по клику на логотип
+            const logo = document.getElementById('logo');
+            const adminPanel = document.getElementById('admin-panel');
+            logo.addEventListener('click', () => {
+                adminPanel.classList.toggle('visible');
+            });
+
+            // Подсветка фона в режиме image при наведении
+            const leftBtn = document.querySelector('#game-screen .btn-left');
+            const rightBtn = document.querySelector('#game-screen .btn-right');
+            const displayArea = document.getElementById('news-display-area');
+            const rootStyles = getComputedStyle(document.documentElement);
+            const newsColor = rootStyles.getPropertyValue('--news-color').trim() || '#3b82f6';
+            const panoColor = rootStyles.getPropertyValue('--panorama-color').trim() || '#f59e0b';
+
+            function setImageBg(color) {
+                const gameScreen = document.getElementById('game-screen');
+                if (!gameScreen.classList.contains('mode-image')) return;
+                displayArea.style.backgroundColor = color;
+            }
+            function resetImageBg() {
+                const gameScreen = document.getElementById('game-screen');
+                if (!gameScreen.classList.contains('mode-image')) return;
+                displayArea.style.backgroundColor = '#000';
+            }
+
+            leftBtn.addEventListener('mouseenter', () => setImageBg(newsColor));
+            leftBtn.addEventListener('mouseleave', resetImageBg);
+            rightBtn.addEventListener('mouseenter', () => setImageBg(panoColor));
+            rightBtn.addEventListener('mouseleave', resetImageBg);
 
             try {
                 const lastPlayed = localStorage.getItem('lastPlayedDate');
@@ -341,7 +397,7 @@
                 }
 
                 statusText.innerText = "Загрузка базы...";
-                const response = await fetch('news.json');
+                const response = await fetch('news.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
                 const responseText = await response.text();
                 if (responseText.trim().startsWith('<')) throw new Error("Неверный формат JSON");
@@ -362,6 +418,11 @@
         });
 
         function generateDailySet() {
+            if (fullDb.length <= 10) {
+                dailySet = shuffleArray([...fullDb]);
+                return;
+            }
+
             const realNews = fullDb.filter(item => item.type === 'REAL');
             const fakeNews = fullDb.filter(item => item.type === 'FAKE');
             shuffleArray(realNews);
@@ -369,9 +430,20 @@
 
             const realCount = 4 + Math.floor(random() * 3); 
             const fakeCount = 10 - realCount;
-            const dailySetRaw = [...realNews.slice(0, realCount), ...fakeNews.slice(0, fakeCount)];
             
-            dailySet = shuffleArray(dailySetRaw);
+            const safeReal = realNews.slice(0, realCount);
+            const safeFake = fakeNews.slice(0, fakeCount);
+            
+            let combined = [...safeReal, ...safeFake];
+            if (combined.length < 10) {
+                 const remainingReal = realNews.slice(realCount);
+                 const remainingFake = fakeNews.slice(fakeCount);
+                 const extras = [...remainingReal, ...remainingFake];
+                 shuffleArray(extras);
+                 combined = combined.concat(extras.slice(0, 10 - combined.length));
+            }
+
+            dailySet = shuffleArray(combined);
         }
 
         function startGame() {
@@ -397,7 +469,7 @@
             if (currentQ >= dailySet.length) return showResults();
             
             const q = dailySet[currentQ];
-            const screen = document.getElementById('game-screen');
+            const gameScreen = document.getElementById('game-screen');
             const displayArea = document.getElementById('news-display-area');
             const headline = document.getElementById('news-headline');
             const imgContainer = document.getElementById('img-container');
@@ -405,19 +477,35 @@
 
             const mode = q.mode || 'text'; 
 
-            screen.classList.remove('mode-text', 'mode-image');
-            screen.classList.add('mode-' + mode);
+            gameScreen.classList.remove('mode-text', 'mode-image');
+            gameScreen.classList.add('mode-' + mode);
 
             headline.innerText = q.text;
             document.getElementById('region-badge').innerText = q.region ? q.region.toUpperCase() : "WORLD";
 
             if (mode === 'text') {
                 displayArea.style.backgroundImage = `url('${q.img}')`;
+                displayArea.style.backgroundColor = 'transparent';
                 imgContainer.classList.add('hidden');
+
+                // Адаптивный размер шрифта по длине текста
+                const len = (q.text || '').length;
+                let fs = '2.2rem';
+                if (len > 140) {
+                    fs = '1.4rem';
+                } else if (len > 90) {
+                    fs = '1.7rem';
+                } else if (len > 60) {
+                    fs = '2rem';
+                }
+                headline.style.fontSize = fs;
             } else {
                 displayArea.style.backgroundImage = 'none';
+                displayArea.style.backgroundColor = '#000';
                 imgContainer.classList.remove('hidden');
-                mainImg.src = q.img;
+                mainImg.src = q.img || '';
+                // Для подписи под картинкой делаем стандартный размер
+                headline.style.fontSize = '1.4rem';
             }
 
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
@@ -448,7 +536,7 @@
                 if(dot) dot.classList.add('wrong');
             }
             
-            let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br>${q.desc}`;
+            let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br>${q.desc || ''}`;
             if (q.link && q.link.length > 5) {
                 content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник</a>`;
             }
