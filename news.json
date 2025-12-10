@@ -9,7 +9,7 @@
     "link": "https://www.rbc.ru/politics/..."
   },
   {
-    "id": 1,
+    "id": 2,
     "type": "REAL",
     "region": "ru",
     "text": "В Госдуме предложили налог на бездетность.",
@@ -18,7 +18,7 @@
     "link": "https://www.rbc.ru/politics/..."
   },
     {
-    "id": 1,
+    "id": 3,
     "type": "REAL",
     "region": "ru",
     "text": "В Госдуме предложили налог на бездетность.",
@@ -27,7 +27,7 @@
     "link": "https://www.rbc.ru/politics/..."
   },
     {
-    "id": 1,
+    "id": 4,
     "type": "REAL",
     "region": "ru",
     "text": "В Госдуме предложили налог на бездетность.",
@@ -36,7 +36,16 @@
     "link": "https://www.rbc.ru/politics/..."
   },
     {
-    "id": 1,
+    "id": 5,
+    "type": "REAL",
+    "region": "ru",
+    "text": "В Госдуме предложили налог на бездетность.",
+    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
+    "link": "https://www.rbc.ru/politics/..."
+  },
+  {
+    "id": 6,
     "type": "REAL",
     "region": "ru",
     "text": "В Госдуме предложили налог на бездетность.",
@@ -45,12 +54,48 @@
     "link": "https://www.rbc.ru/politics/..."
   },
     {
-    "id": 1,
+    "id": 7,
     "type": "REAL",
     "region": "ru",
     "text": "В Госдуме предложили налог на бездетность.",
     "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
     "img": "https://placehold.co/800x600/111/FFF?text=News+1",
     "link": "https://www.rbc.ru/politics/..."
-  }
+  },
+    {
+    "id": 8,
+    "type": "REAL",
+    "region": "ru",
+    "text": "В Госдуме предложили налог на бездетность.",
+    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
+    "link": "https://www.rbc.ru/politics/..."
+  },
+    {
+    "id": 9,
+    "type": "REAL",
+    "region": "ru",
+    "text": "В Госдуме предложили налог на бездетность.",
+    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
+    "link": "https://www.rbc.ru/politics/..."
+  },
+    {
+    "id": 10,
+    "type": "REAL",
+    "region": "ru",
+    "text": "В Госдуме предложили налог на бездетность.",
+    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
+    "link": "https://www.rbc.ru/politics/..."
+  },
+    {
+    "id": 11,
+    "type": "REAL",
+    "region": "ru",
+    "text": "В Госдуме предложили налог на бездетность.",
+    "desc": "Это реальная инициатива, которая обсуждалась в октябре 2024 года.",
+    "img": "https://placehold.co/800x600/111/FFF?text=News+1",
+    "link": "https://www.rbc.ru/politics/..."
+  },
 ]
