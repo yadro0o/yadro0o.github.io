@@ -3,177 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panoramdle</title>
+    <title>Panoramdle - Реальность или Панорама?</title>
     <style>
         :root {
-            --news-color: #3b82f6;
-            --panorama-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --accent-color: #3b82f6;
             --success-color: #22c55e;
             --error-color: #ef4444;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --disabled-color: #333333;
+            --card-bg: #ffffff;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
-        
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.3s ease;
-            z-index: 10;
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
+
+        /* --- UI UTILS --- */
         .hidden { display: none !important; }
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        /* Главная */
-        #start-screen { background: #000; text-align: center; padding: 20px; }
-        h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-        .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
-        
-        .btn-start {
-            padding: 15px 40px; font-size: 1.5rem; background: #fff; color: #000; border: none;
-            text-transform: uppercase; font-weight: bold; transition: transform 0.2s;
-            border-radius: 5px; cursor: pointer;
-        }
-        .btn-start:hover:not(:disabled) { transform: scale(1.05); }
-        .btn-start:disabled { background-color: var(--disabled-color); color: #888; cursor: not-allowed; }
-        
-        .status-text { margin-top: 15px; color: #666; font-size: 0.9rem; max-width: 600px; line-height: 1.4; }
-        
-        .timer-msg { 
-            margin-top: 20px; color: #aaa; font-size: 1rem; line-height: 1.5;
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
-            border: 1px dashed #444; max-width: 400px;
+        /* --- SCREENS --- */
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Игра */
-        #game-screen { display: flex; flex-direction: column; }
-        .progress-container {
-            position: absolute; top: 20px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 10px; z-index: 50;
+        /* START SCREEN */
+        .logo { font-size: 3rem; font-weight: 800; margin-bottom: 10px; color: var(--text-color); }
+        .subtitle { color: #64748b; margin-bottom: 40px; max-width: 400px; line-height: 1.5; }
+        .status-text { margin-top: 20px; font-size: 0.9rem; color: #94a3b8; }
+        .come-back-msg { 
+            margin-bottom: 20px; 
+            padding: 10px; 
+            background: #e0f2fe; 
+            color: #0369a1; 
+            border-radius: 8px; 
+            font-size: 0.9rem;
         }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s; }
-        .dot.correct { background: var(--success-color); box-shadow: 0 0 10px var(--success-color); }
-        .dot.wrong { background: var(--error-color); box-shadow: 0 0 10px var(--error-color); }
-        .dot.active { background: #fff; transform: scale(1.3); }
 
-        .news-display {
-            position: relative; height: 35vh; width: 100%;
-            background-size: cover; background-position: center;
-            display: flex; align-items: flex-end; 
+        /* ADMIN PANEL */
+        .admin-panel {
+            margin-top: 30px;
+            padding: 10px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
         }
-        .news-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            z-index: 1;
+        .admin-toggle {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
         }
-        .news-text {
-            position: relative; z-index: 2; padding: 20px; width: 100%;
-            text-align: center; font-size: 1.4rem; font-weight: 600; text-shadow: 0 2px 4px #000;
-            margin-bottom: 10px;
+        .date-picker-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input[type="date"] {
+            padding: 5px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* GAME SCREEN */
+        #game-screen { justify-content: flex-start; padding: 0; }
+        
+        /* Top Section: Image + Text */
+        .card-container {
+            width: 100%;
+            height: 40%;
+            position: relative;
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+        .news-img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .news-content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+            text-align: left;
         }
         .region-badge {
-            position: absolute; top: 20px; right: 20px; z-index: 5;
-            background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px;
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
-            backdrop-filter: blur(5px);
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .headline {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        .controls-area { height: 65vh; width: 100%; display: flex; }
+        /* Bottom Section: Buttons */
+        .controls-container {
+            height: 60%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+            box-sizing: border-box;
+            background: white;
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .dot {
+            width: 8px; height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 50%;
+        }
+        .dot.active { background-color: var(--accent-color); transform: scale(1.2); }
+        .dot.correct { background-color: var(--success-color); }
+        .dot.wrong { background-color: var(--error-color); }
+
         .choice-btn {
-            width: 50%; height: 100%; border: none; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 2rem; font-weight: 900; text-transform: uppercase;
-            transition: all 0.3s ease; color: rgba(255,255,255,0.7);
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 16px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
         }
-        .btn-left { background-color: #1a1a1a; border-right: 1px solid #333; }
-        .btn-right { background-color: #1a1a1a; }
+        .choice-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
         
-        .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
-        .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
+        .btn-real { border-color: #bfdbfe; color: #1e40af; } 
+        .btn-fake { border-color: #fecaca; color: #991b1b; }
 
-        #result-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 100; text-align: center; padding: 20px;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        /* OVERLAY RESULT */
+        .result-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 30px;
+            box-sizing: border-box;
         }
-        #result-overlay.show { opacity: 1; pointer-events: auto; }
-        #result-overlay.correct-bg { background-color: rgba(34, 197, 94, 0.95); }
-        #result-overlay.wrong-bg { background-color: rgba(239, 68, 68, 0.95); }
+        .result-overlay.show { opacity: 1; pointer-events: auto; }
         
-        .res-tag { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
-        .res-explanation { font-size: 1.5rem; margin-bottom: 30px; max-width: 600px; line-height: 1.4; }
-        
-        .source-link {
-            display: inline-flex; align-items: center; margin-top: 15px; padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px; color: #fff; text-decoration: none;
-            font-size: 1rem; font-weight: 600; transition: all 0.2s;
-        }
-        .source-link:hover { background-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
-        
-        .btn-next {
-            margin-top: 30px; padding: 15px 50px; font-size: 1.2rem; background: #fff; color: #000;
-            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        .result-overlay.correct-bg { background: rgba(220, 252, 231, 0.98); }
+        .result-overlay.wrong-bg { background: rgba(254, 226, 226, 0.98); }
+
+        .res-icon { font-size: 4rem; margin-bottom: 10px; }
+        .res-tag { font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
+        .res-desc { font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; color: #334155; }
+        .source-link { color: var(--accent-color); text-decoration: underline; display: block; margin-top: 10px;}
+
+        /* FINAL SCREEN */
+        .score-big { font-size: 4rem; font-weight: 900; color: var(--accent-color); margin: 0; }
+        .rank-badge { 
+            background: #f1f5f9; padding: 5px 15px; 
+            border-radius: 20px; color: #64748b; margin-bottom: 30px; 
         }
 
-        #final-screen { background: #111; text-align: center; }
-        .final-score { font-size: 6rem; font-weight: bold; color: var(--success-color); }
-        .final-rank { font-size: 2rem; color: #aaa; margin-bottom: 30px; }
     </style>
 </head>
 <body>
-    <!-- Экран 1: Старт -->
+
+    <!-- START SCREEN -->
     <div id="start-screen" class="screen">
-        <h1>Panoramdle</h1>
-        <div class="subtitle">Daily Reality Check</div>
-        <button class="btn-start" onclick="startGame()" id="start-btn" disabled>Загрузка...</button>
-        <p class="status-text" id="status-text">Подключение к базе новостей...</p>
-        <div class="timer-msg hidden" id="come-back-msg"></div>
+        <div class="logo">Panoramdle</div>
+        <div class="subtitle">Отличите реальную новость от сатирического заголовка ИА Панорама.</div>
+        
+        <div id="come-back-msg" class="come-back-msg hidden"></div>
+        
+        <button id="start-btn" class="btn" disabled>Загрузка...</button>
+        <div id="status-text" class="status-text">Подключение к базе новостей...</div>
+
+        <!-- ADMIN PANEL (Visible for testing) -->
+        <div class="admin-panel">
+            <button class="admin-toggle" onclick="toggleAdmin()">🛠 Debug Date (Admin)</button>
+            <div id="date-controls" class="date-picker-container hidden">
+                <input type="date" id="debug-date-picker">
+                <button onclick="applyDebugDate()" style="padding: 5px;">Apply</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Экран 2: Игра -->
+    <!-- GAME SCREEN -->
     <div id="game-screen" class="screen hidden">
-        <div class="progress-container" id="progress-bar"></div>
-        <div class="news-display" id="news-img">
-            <div class="news-overlay"></div>
-            <div class="region-badge" id="region-badge">RU</div>
-            <div class="news-text" id="news-headline">Загрузка...</div>
+        <div class="card-container">
+            <div id="news-img" class="news-img"></div>
+            <div class="news-content">
+                <span id="region-badge" class="region-badge">WORLD</span>
+                <div id="news-headline" class="headline">Загрузка заголовка...</div>
+            </div>
         </div>
-        <div class="controls-area">
-            <button class="choice-btn btn-left" onclick="checkAnswer('REAL')">НОВОСТЬ</button>
-            <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')">ПАНОРАМА</button>
+
+        <div class="controls-container">
+            <div id="progress-bar" class="progress-bar"></div>
+            <button class="choice-btn btn-real" onclick="checkAnswer('REAL')">РЕАЛЬНОСТЬ</button>
+            <button class="choice-btn btn-fake" onclick="checkAnswer('FAKE')">ИА ПАНОРАМА</button>
+        </div>
+
+        <!-- RESULT OVERLAY -->
+        <div id="result-overlay" class="result-overlay">
+            <div id="res-icon" class="res-icon"></div>
+            <div id="res-tag" class="res-tag"></div>
+            <div id="res-desc" class="res-desc"></div>
+            <button class="btn" onclick="nextQuestion()">Далее</button>
         </div>
     </div>
 
-    <!-- Оверлей ответа -->
-    <div id="result-overlay">
-        <div class="res-tag" id="res-tag">НОВОСТЬ</div>
-        <div class="res-explanation" id="res-desc">Описание...</div>
-        <button class="btn-next" onclick="nextQuestion()">ДАЛЕЕ</button>
-    </div>
-
-    <!-- Экран 3: Финал -->
+    <!-- FINAL SCREEN -->
     <div id="final-screen" class="screen hidden">
-        <h2>Результат дня</h2>
-        <div class="final-score" id="final-score">0/10</div>
-        <div class="final-rank" id="final-rank">Звание</div>
-        <button class="btn-start" onclick="location.reload()" style="margin-top: 20px;">В МЕНЮ</button>
+        <div class="subtitle">Результат за <span id="final-date-display"></span></div>
+        <div class="score-big"><span id="final-score">0</span>/10</div>
+        <div class="rank-badge" id="final-rank">Читатель</div>
+        <p>Возвращайтесь завтра за новой порцией новостей!</p>
+        <button class="btn" onclick="location.reload()">На главную</button>
     </div>
 
     <script>
-        // Код игры Panoramdle
-        
+        // --- STATE ---
         let fullDb = [];
         let dailySet = [];
         let currentQ = 0;
         let score = 0;
         
-        const todayStr = new Date().toISOString().slice(0, 10);
+        // По умолчанию берем сегодня
+        let currentDateObj = new Date();
+        let todayStr = currentDateObj.toISOString().slice(0, 10);
 
-        // --- SEEDED RANDOM ---
+        // --- SEEDED RANDOM (PRNG) ---
+        // Алгоритм Mulberry32 для предсказуемого рандома по сиду
         function mulberry32(a) {
             return function() {
                 var t = a += 0x6D2B79F5;
@@ -182,7 +306,8 @@
                 return ((t ^ t >>> 14) >>> 0) / 4294967296;
             }
         }
-        
+
+        // Хешируем строку даты в число
         function getDateSeed(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -192,73 +317,260 @@
             return Math.abs(hash);
         }
 
-        const seed = getDateSeed(todayStr);
-        const random = mulberry32(seed); 
-
-        function shuffleArray(array) {
+        // Перемешивание массива с использованием нашего PRNG
+        function shuffleArray(array, randomFn) {
             for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(random() * (i + 1));
+                const j = Math.floor(randomFn() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
         }
 
-        // --- ЗАГРУЗКА ---
+        // --- CORE LOGIC ---
+
+        // Генерация набора на основе todayStr
+        function generateDailySet() {
+            if (!fullDb || fullDb.length === 0) return;
+
+            const seed = getDateSeed(todayStr);
+            const random = mulberry32(seed); // Инициализация генератора с сидом даты
+
+            // 1. Сначала копируем базу, чтобы не мутировать оригинал
+            // 2. Важно: Сортируем базу перед шаффлом, чтобы исходный порядок в JSON не влиял 
+            //    на результат на разных устройствах, если вдруг JSON загрузится иначе (хотя массив упорядочен).
+            let pool = [...fullDb].sort((a,b) => a.id - b.id);
+
+            // 3. Перемешиваем ВЕСЬ пул детерминированно
+            // Это гарантирует, что даже если мы берем новости разных типов, 
+            // сам "рандом" выбора будет привязан к дате.
+            shuffleArray(pool, random);
+
+            // 4. Фильтруем перемешанный пул
+            const realNews = pool.filter(item => item.type === 'REAL');
+            const fakeNews = pool.filter(item => item.type === 'FAKE');
+
+            // 5. Определяем баланс (от 4 до 6 реальных)
+            // Используем тот же random
+            const realCountTarget = 4 + Math.floor(random() * 3);
+            const fakeCountTarget = 10 - realCountTarget;
+
+            // 6. Набираем нужное количество, учитывая реальные размеры массивов
+            const safeRealCount = Math.min(realCountTarget, realNews.length);
+            // Если реальных не хватило, пытаемся добрать фейками до 10, но не больше чем есть
+            const neededFakes = 10 - safeRealCount;
+            const safeFakeCount = Math.min(neededFakes, fakeNews.length);
+
+            const selectedReal = realNews.slice(0, safeRealCount);
+            const selectedFake = fakeNews.slice(0, safeFakeCount);
+
+            // 7. Объединяем и СНОВА перемешиваем, чтобы порядок вопросов (REAL/FAKE) тоже был случайным
+            let finalSet = [...selectedReal, ...selectedFake];
+            shuffleArray(finalSet, random);
+
+            dailySet = finalSet;
+            
+            console.log(`[Panoramdle] Date: ${todayStr}, Seed: ${seed}, Questions: ${dailySet.length}`);
+            console.log(dailySet.map(q => q.type));
+        }
+
+        // Проверка: играл ли уже пользователь
+        function checkHistory() {
+            const lastPlayed = localStorage.getItem('lastPlayedDate');
+            const startBtn = document.getElementById('start-btn');
+            const comeBackMsg = document.getElementById('come-back-msg');
+
+            if (lastPlayed === todayStr) {
+                comeBackMsg.innerHTML = `Вы уже играли за дату <strong>${todayStr}</strong>.<br>Результат не будет записан в статистику, но вы можете переиграть.`;
+                comeBackMsg.classList.remove('hidden');
+                startBtn.innerText = "Сыграть ещё раз";
+            } else {
+                comeBackMsg.classList.add('hidden');
+                startBtn.innerText = "Начать игру";
+            }
+        }
+
+        // --- INITIALIZATION ---
         window.addEventListener('DOMContentLoaded', async () => {
             const startBtn = document.getElementById('start-btn');
             const statusText = document.getElementById('status-text');
-            const comeBackMsg = document.getElementById('come-back-msg');
+
+            // Устанавливаем текущую дату в пикер админки
+            document.getElementById('debug-date-picker').value = todayStr;
+
+            // Fallback DB на случай ошибок
+            const fallbackDb = [
+                {id: 1, type: "REAL", region: "ru", text: "Тестовый вопрос 1 (REAL)", desc: "Описание...", img: "https://placehold.co/800x600/111/FFF?text=News1", link: ""},
+                {id: 2, type: "FAKE", region: "ru", text: "Тестовый вопрос 2 (FAKE)", desc: "Описание...", img: "https://placehold.co/800x600/222/FFF?text=News2", link: ""},
+                {id: 3, type: "REAL", region: "usa", text: "Тестовый вопрос 3 (REAL)", desc: "Описание...", img: "https://placehold.co/800x600/333/FFF?text=News3", link: ""},
+                {id: 4, type: "FAKE", region: "world", text: "Тестовый вопрос 4 (FAKE)", desc: "Описание...", img: "https://placehold.co/800x600/444/FFF?text=News4", link: ""}
+            ];
 
             try {
-                // 1. Проверка LocalStorage
-                const lastPlayed = localStorage.getItem('lastPlayedDate');
-                if (lastPlayed === todayStr) {
-                    comeBackMsg.innerHTML = "Вы уже выполнили Daily Panoramdle сегодня.<br>Но если хотите улучшить счет или просто скучно — <strong>погнали ещё раз!</strong>";
-                    comeBackMsg.classList.remove('hidden');
-                    startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
-                } else {
-                    startBtn.innerText = "НАЧАТЬ";
-                }
-
-                // 2. Загрузка базы
-                statusText.innerText = "Загрузка базы данных...";
+                const response = await fetch('news.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
-                // Резервная база (на случай сбоя)
-                const fallbackDb = [
-                    { id: 1, type: "REAL", region: "ru", text: "В Госдуме предложили налог на бездетность.", desc: "Такое предложение звучало от депутатов.", img: "https://placehold.co/800x600/111/FFF?text=News+1", link: "" },
-                    { id: 2, type: "FAKE", region: "ru", text: "Роскосмос покрасит ракеты под хохлому.", desc: "Это сатира.", img: "https://placehold.co/800x600/222/FFF?text=News+2", link: "" },
-                    { id: 3, type: "REAL", region: "usa", text: "Илон Маск вызвал Путина на поединок в Twitter.", desc: "Это реально было в 2022 году.", img: "https://placehold.co/800x600/333/FFF?text=News+3", link: "" },
-                    { id: 4, type: "FAKE", region: "world", text: "ООН запретила букву Z в алфавите.", desc: "Выдумка.", img: "https://placehold.co/800x600/444/FFF?text=News+4", link: "" },
-                    { id: 5, type: "REAL", region: "world", text: "Австралия проиграла войну страусам эму.", desc: "Исторический факт 1932 года.", img: "https://placehold.co/800x600/555/FFF?text=News+5", link: "" },
-                    { id: 6, type: "FAKE", region: "ru", text: "Сбербанк ввел комиссию за просмотр баланса глазами.", desc: "Шутка о комиссиях банков.", img: "https://placehold.co/800x600/666/FFF?text=News+6", link: "" },
-                    { id: 7, type: "REAL", region: "usa", text: "Кот стал мэром города на Аляске.", desc: "Кот Стаббс правил с 1997 по 2017.", img: "https://placehold.co/800x600/777/FFF?text=News+7", link: "" },
-                    { id: 8, type: "FAKE", region: "world", text: "Apple выпустила кирпич iBrick за $1000.", desc: "Сатира на цены компании.", img: "https://placehold.co/800x600/888/FFF?text=News+8", link: "" },
-                    { id: 9, type: "REAL", region: "eu", text: "В Финляндии проводятся соревнования по переноске жен.", desc: "Ежегодный чемпионат мира.", img: "https://placehold.co/800x600/999/FFF?text=News+9", link: "" },
-                    { id: 10, type: "FAKE", region: "eu", text: "Британские ученые доказали, что коты — жидкие.", desc: "Это старый мем, а не наука.", img: "https://placehold.co/800x600/aaa/FFF?text=News+10", link: "" },
-                    { id: 11, type: "REAL", region: "ru", text: "Мужчина подал в суд на самого себя и выиграл.", desc: "Реальное дело Кертиса Гоки.", img: "https://placehold.co/800x600/bbb/FFF?text=News+11", link: "" },
-                    { id: 12, type: "FAKE", region: "ru", text: "Минздрав рекомендовал лечить депрессию 'Сватами'.", desc: "Чистая сатира.", img: "https://placehold.co/800x600/ccc/FFF?text=News+12", link: "" }
-                ];
+                const responseText = await response.text();
+                // Простая защита, если вернулся HTML страницы 404
+                if (responseText.trim().startsWith('<')) throw new Error('Not JSON (HTML received)');
+                
+                fullDb = JSON.parse(responseText);
+                statusText.innerHTML = `Загружено вопросов: ${fullDb.length}.`;
+                statusText.style.color = "#22c55e"; // green
 
-                try {
-                    const response = await fetch('news.json');
-                    if (!response.ok) throw new Error("Файл news.json не найден");
-                    const responseText = await response.text();
-                    
-                    if (responseText.trim().startsWith('<')) throw new Error("Сервер вернул HTML");
-
-                    fullDb = JSON.parse(responseText);
-                    statusText.innerHTML = `База загружена (${fullDb.length} новостей)`;
-                    statusText.style.color = "#22c55e";
-                } catch (e) {
-                    console.warn("Сбой загрузки news.json, используем резерв:", e);
-                    fullDb = fallbackDb;
-                    statusText.innerHTML = `Не удалось загрузить news.json. Запущен демо-режим.`;
-                    statusText.style.color = "#f59e0b";
-                }
-
+            } catch (e) {
+                console.warn("Ошибка загрузки news.json, используем резерв:", e);
+                fullDb = fallbackDb;
+                statusText.innerHTML = `Ошибка news.json (${e.message}). Включен резервный режим.`;
+                statusText.style.color = "#f59e0b"; // amber
+            } finally {
+                // ВАЖНО: Вызываем генерацию здесь, когда база точно готова
                 generateDailySet();
-                
-            } catch (globalError) {
-                console.error("Критическая ошибка:", globalError);
-                statusText.innerHTML = `Ошибка: ${globalError.message}`;
-                statusText.style.color
+                checkHistory();
+                startBtn.disabled = false;
+            }
+        });
+
+        // --- GAME LOGIC ---
+
+        function startGame() {
+            if (!dailySet || dailySet.length === 0) {
+                alert("Ошибка: вопросы не сгенерированы. Попробуйте обновить страницу.");
+                return;
+            }
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            initDots();
+            loadQuestion();
+        }
+
+        function initDots() {
+            const container = document.getElementById('progress-bar');
+            container.innerHTML = '';
+            for(let i=0; i<dailySet.length; i++) {
+                let d = document.createElement('div');
+                d.className = 'dot';
+                d.id = `dot-${i}`;
+                container.appendChild(d);
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQ >= dailySet.length) {
+                showResults();
+                return;
+            }
+            const q = dailySet[currentQ];
+            document.getElementById('news-headline').innerText = q.text;
+            
+            // Image handling
+            const imgEl = document.getElementById('news-img');
+            imgEl.style.backgroundImage = `url('${q.img}')`;
+            
+            const region = q.region ? q.region.toUpperCase() : "WORLD";
+            document.getElementById('region-badge').innerText = region;
+
+            // Update dots
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            const curDot = document.getElementById(`dot-${currentQ}`);
+            if(curDot) curDot.classList.add('active');
+        }
+
+        function checkAnswer(userChoice) {
+            const q = dailySet[currentQ];
+            const isCorrect = (userChoice === q.type);
+            
+            const overlay = document.getElementById('result-overlay');
+            const icon = document.getElementById('res-icon');
+            const tag = document.getElementById('res-tag');
+            const desc = document.getElementById('res-desc');
+            const dot = document.getElementById(`dot-${currentQ}`);
+
+            // Reset classes
+            overlay.className = 'result-overlay show'; 
+
+            if (isCorrect) {
+                score++;
+                overlay.classList.add('correct-bg');
+                icon.innerText = "✅";
+                tag.innerText = "ВЕРНО!";
+                tag.style.color = "#15803d"; // dark green
+                if(dot) dot.classList.add('correct');
+            } else {
+                overlay.classList.add('wrong-bg');
+                icon.innerText = "❌";
+                tag.innerText = "ОШИБКА";
+                tag.style.color = "#b91c1c"; // dark red
+                if(dot) dot.classList.add('wrong');
+            }
+
+            // Формируем описание
+            let typeLabel = (q.type === 'REAL') ? "Это реальная новость." : "Это сатира ИА Панорама.";
+            let content = `<strong>${typeLabel}</strong><br>${q.desc || ''}`;
+            
+            if (q.link && q.link.length > 5) {
+                content += `<br><a href="${q.link}" target="_blank" class="source-link">Источник / Подробнее</a>`;
+            }
+            desc.innerHTML = content;
+        }
+
+        function nextQuestion() {
+            document.getElementById('result-overlay').classList.remove('show');
+            currentQ++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            // Сохраняем факт игры только если это был "сегодняшний" день (для честности)
+            // Но в режиме дебага это не так важно. Сохраним текущий todayStr.
+            localStorage.setItem('lastPlayedDate', todayStr);
+
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('final-screen').classList.remove('hidden');
+            
+            document.getElementById('final-date-display').innerText = todayStr;
+            document.getElementById('final-score').innerText = score;
+            
+            const percent = score / dailySet.length;
+            let rank = "Читатель";
+            if(percent > 0.4) rank = "Новостной эрудит";
+            if(percent > 0.7) rank = "Магистр Информации";
+            if(percent === 1) rank = "Бог Панорамы";
+
+            document.getElementById('final-rank').innerText = rank;
+        }
+
+        // --- ADMIN / DEBUG FUNCTIONS ---
+        function toggleAdmin() {
+            const el = document.getElementById('date-controls');
+            el.classList.toggle('hidden');
+        }
+
+        function applyDebugDate() {
+            const picker = document.getElementById('debug-date-picker');
+            if (!picker.value) return;
+
+            // Обновляем глобальную переменную даты
+            todayStr = picker.value;
+            
+            // Сбрасываем состояние игры
+            currentQ = 0;
+            score = 0;
+            
+            // Перегенерируем сет с НОВЫМ сидом
+            generateDailySet();
+            
+            // Обновляем UI статуса
+            checkHistory();
+            
+            // Визуальное подтверждение
+            const btn = document.querySelector('.admin-panel button:last-child');
+            const originalText = btn.innerText;
+            btn.innerText = "Applied!";
+            setTimeout(() => btn.innerText = originalText, 1000);
+
+            alert(`Дата изменена на ${todayStr}.\nВопросы перегенерированы.`);
+        }
+
+    </script>
+</body>
+</html>
