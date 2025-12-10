@@ -12,7 +12,7 @@
             --error-color: #ef4444;
             --bg-color: #121212;
             --text-color: #ffffff;
-            --disabled-color: #555555;
+            --disabled-color: #333333;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -87,7 +87,7 @@
         .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.2; }
         .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.2; }
 
-        /* Оверлеи */
+        /* Оверлеи и результаты */
         #result-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -97,8 +97,21 @@
         #result-overlay.show { opacity: 1; pointer-events: auto; }
         #result-overlay.correct-bg { background-color: rgba(34, 197, 94, 0.95); }
         #result-overlay.wrong-bg { background-color: rgba(239, 68, 68, 0.95); }
+        
         .res-tag { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
-        .res-explanation { font-size: 1.5rem; margin-bottom: 40px; max-width: 600px; line-height: 1.4; }
+        .res-explanation { font-size: 1.5rem; margin-bottom: 30px; max-width: 600px; line-height: 1.4; }
+        
+        /* СТИЛИ ДЛЯ КНОПКИ-ССЫЛКИ */
+        .source-link {
+            display: inline-flex; align-items: center; margin-top: 10px; margin-bottom: 30px;
+            padding: 12px 25px; background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 50px;
+            color: #fff; text-decoration: none; font-size: 1rem; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .source-link:hover { background-color: rgba(255, 255, 255, 0.4); transform: scale(1.05); }
+        .source-link::before { content: "🔗"; margin-right: 8px; }
+
         .btn-next {
             padding: 15px 50px; font-size: 1.2rem; background: #fff; color: #000;
             border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
@@ -139,6 +152,7 @@
     <div id="result-overlay">
         <div class="res-tag" id="res-tag">НОВОСТЬ</div>
         <div class="res-explanation" id="res-desc">Описание...</div>
+        <!-- Кнопка появится здесь через JS -->
         <button class="btn-next" onclick="nextQuestion()">ДАЛЕЕ</button>
     </div>
 
@@ -152,16 +166,14 @@
 
     <script>
         // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
-        let fullDb = [];     // Вся база данных
-        let dailySet = [];   // 10 вопросов на сегодня
+        let fullDb = [];     
+        let dailySet = [];   
         let currentQ = 0;
         let score = 0;
         
-        // Получаем сегодняшнюю дату в формате YYYY-MM-DD
         const todayStr = new Date().toISOString().slice(0, 10);
 
         // --- ГЕНЕРАТОР СЛУЧАЙНЫХ ЧИСЕЛ (SEEDED) ---
-        // Позволяет получать одинаковые "случайные" числа для одной и той же даты
         function mulberry32(a) {
             return function() {
                 var t = a += 0x6D2B79F5;
@@ -171,7 +183,6 @@
             }
         }
 
-        // Создаем хэш из строки даты для сида
         function getDateSeed(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -182,9 +193,8 @@
         }
 
         const seed = getDateSeed(todayStr);
-        const random = mulberry32(seed); // Теперь используем random() вместо Math.random()
+        const random = mulberry32(seed);
 
-        // Функция перемешивания массива с нашим random()
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(random() * (i + 1));
@@ -193,21 +203,20 @@
             return array;
         }
 
-
         // --- ЗАГРУЗКА ---
         window.addEventListener('DOMContentLoaded', async () => {
             const startBtn = document.getElementById('start-btn');
             const statusText = document.getElementById('status-text');
             const comeBackMsg = document.getElementById('come-back-msg');
 
-            // 1. Проверка: играл ли уже сегодня?
+            // 1. Проверка LocalStorage
             const lastPlayed = localStorage.getItem('lastPlayedDate');
             if (lastPlayed === todayStr) {
                 startBtn.disabled = true;
                 startBtn.innerText = "ЗАВЕРШЕНО";
                 statusText.classList.add('hidden');
                 comeBackMsg.classList.remove('hidden');
-                return; // Останавливаем загрузку
+                return;
             }
 
             // 2. Загрузка базы
@@ -216,7 +225,6 @@
                 if (!response.ok) throw new Error("Файл не найден");
                 fullDb = await response.json();
                 
-                // 3. Формирование ежедневного набора
                 generateDailySet();
 
                 startBtn.innerText = "НАЧАТЬ";
@@ -234,31 +242,27 @@
 
         // --- ЛОГИКА ФОРМИРОВАНИЯ ВОПРОСОВ ---
         function generateDailySet() {
-            // Разделяем базу на правду и ложь
             const realNews = fullDb.filter(item => item.type === 'REAL');
             const fakeNews = fullDb.filter(item => item.type === 'FAKE');
 
             if (realNews.length < 6 || fakeNews.length < 6) {
-                alert("Ошибка: В базе слишком мало новостей для баланса!");
-                return;
+                console.warn("В базе мало новостей! Баланс может быть нарушен.");
             }
 
-            // Перемешиваем обе кучи (используя сид дня!)
             shuffleArray(realNews);
             shuffleArray(fakeNews);
 
-            // Решаем, сколько будет правды: от 4 до 6
-            // random() дает 0..1. 
-            // Math.floor(random() * 3) дает 0, 1 или 2.
-            // + 4 дает 4, 5 или 6.
+            // Баланс: от 4 до 6 правдивых новостей
             const realCount = 4 + Math.floor(random() * 3); 
             const fakeCount = 10 - realCount;
 
-            // Набираем вопросы
-            const selectedReal = realNews.slice(0, realCount);
-            const selectedFake = fakeNews.slice(0, fakeCount);
+            // Если новостей меньше чем нужно, берем сколько есть (защита от краша)
+            const safeRealCount = Math.min(realCount, realNews.length);
+            const safeFakeCount = Math.min(fakeCount, fakeNews.length);
 
-            // Объединяем и снова перемешиваем, чтобы они шли не по порядку
+            const selectedReal = realNews.slice(0, safeRealCount);
+            const selectedFake = fakeNews.slice(0, safeFakeCount);
+
             dailySet = [...selectedReal, ...selectedFake];
             shuffleArray(dailySet);
         }
@@ -275,7 +279,7 @@
         function initDots() {
             const container = document.getElementById('progress-bar');
             container.innerHTML = '';
-            for(let i=0; i<10; i++) {
+            for(let i=0; i<dailySet.length; i++) {
                 let d = document.createElement('div');
                 d.className = 'dot';
                 d.id = 'dot-'+i;
@@ -284,17 +288,15 @@
         }
 
         function loadQuestion() {
-            if (currentQ >= 10) return showResults();
+            if (currentQ >= dailySet.length) return showResults();
             
             const q = dailySet[currentQ];
             document.getElementById('news-headline').innerText = q.text;
             document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
             
-            // Тег региона (пока просто отображаем)
             const region = q.region ? q.region.toUpperCase() : 'WORLD';
             document.getElementById('region-badge').innerText = region;
 
-            // Точки
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             if(document.getElementById('dot-'+currentQ)) {
                 document.getElementById('dot-'+currentQ).classList.add('active');
@@ -321,7 +323,18 @@
                 if(dot) dot.classList.add('wrong');
             }
 
-            desc.innerHTML = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br><br>${q.desc}`;
+            // Формируем контент описания
+            let content = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br><br>${q.desc}`;
+            
+            // Если есть ссылка, добавляем кнопку
+            if (q.link && q.link.length > 5) {
+                content += `<br>
+                <a href="${q.link}" target="_blank" class="source-link">
+                    Читать источник
+                </a>`;
+            }
+
+            desc.innerHTML = content;
         }
 
         function nextQuestion() {
@@ -331,18 +344,18 @@
         }
 
         function showResults() {
-            // Записываем, что пользователь сыграл сегодня
             localStorage.setItem('lastPlayedDate', todayStr);
 
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
             
-            document.getElementById('final-score').innerText = `${score} / 10`;
+            document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
             
             let rank = "Новичок интернета";
-            if(score > 4) rank = "Опытный серфер";
-            if(score > 7) rank = "Грандмастер постиронии";
-            if(score === 10) rank = "Бог новостной ленты";
+            const percent = score / dailySet.length;
+            if(percent > 0.4) rank = "Опытный серфер";
+            if(percent > 0.7) rank = "Грандмастер постиронии";
+            if(percent === 1) rank = "Бог новостной ленты";
             
             document.getElementById('final-rank').innerText = rank;
         }
