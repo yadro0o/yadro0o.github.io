@@ -46,7 +46,6 @@
             border: 1px dashed #444; max-width: 400px;
         }
 
-        /* Админ панель */
         #admin-panel {
             margin-top: 40px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
             text-align: left; max-width: 300px;
@@ -56,8 +55,9 @@
         #admin-panel button { padding: 5px 15px; cursor: pointer; background: #444; color: #fff; border: none; border-radius: 4px; }
         #admin-panel button:hover { background: #555; }
 
-        /* Игра */
-        #game-screen { display: flex; flex-direction: column; }
+        /* ИГРОВОЙ ЭКРАН - ОБЩЕЕ */
+        #game-screen { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        
         .progress-container {
             position: absolute; top: 20px; left: 0; width: 100%;
             display: flex; justify-content: center; gap: 10px; z-index: 50;
@@ -67,41 +67,96 @@
         .dot.wrong { background: var(--error-color); box-shadow: 0 0 10px var(--error-color); }
         .dot.active { background: #fff; transform: scale(1.3); }
 
-        .news-display {
-            position: relative; height: 35vh; width: 100%;
-            background-size: cover; background-position: center;
-            display: flex; align-items: flex-end; 
-        }
-        .news-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
-            z-index: 1;
-        }
-        .news-text {
-            position: relative; z-index: 2; padding: 20px; width: 100%;
-            text-align: center; font-size: 1.4rem; font-weight: 600; text-shadow: 0 2px 4px #000;
-            margin-bottom: 10px;
-        }
         .region-badge {
-            position: absolute; top: 20px; right: 20px; z-index: 5;
+            position: absolute; top: 20px; right: 20px; z-index: 55;
             background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px;
             font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
             backdrop-filter: blur(5px);
         }
 
-        .controls-area { height: 65vh; width: 100%; display: flex; }
-        .choice-btn {
+        /* --- РЕЖИМ 1: TEXT (Классика) --- */
+        #game-screen.mode-text .news-display {
+            position: relative; height: 35vh; width: 100%;
+            background-size: cover; background-position: center;
+            display: flex; align-items: flex-end; 
+        }
+        #game-screen.mode-text .news-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
+            z-index: 1;
+        }
+        #game-screen.mode-text .news-text {
+            position: relative; z-index: 2; padding: 20px; width: 100%;
+            text-align: center; font-size: 1.4rem; font-weight: 600; text-shadow: 0 2px 4px #000;
+            margin-bottom: 10px;
+        }
+        #game-screen.mode-text .controls-area { height: 65vh; width: 100%; display: flex; }
+        #game-screen.mode-text .choice-btn {
             width: 50%; height: 100%; border: none; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             font-size: 2rem; font-weight: 900; text-transform: uppercase;
             transition: all 0.3s ease; color: rgba(255,255,255,0.7);
         }
-        .btn-left { background-color: #1a1a1a; border-right: 1px solid #333; }
-        .btn-right { background-color: #1a1a1a; }
-        
-        .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
-        .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
+        #game-screen.mode-text .btn-left { background-color: #1a1a1a; border-right: 1px solid #333; }
+        #game-screen.mode-text .btn-right { background-color: #1a1a1a; }
+        #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
+        #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
+        /* --- РЕЖИМ 2: IMAGE (Новый) --- */
+        #game-screen.mode-image {
+            display: flex; flex-direction: row; /* Горизонтальная раскладка */
+            background: #111;
+        }
+
+        /* Боковые кнопки для режима IMAGE */
+        #game-screen.mode-image .controls-area {
+            display:contents; /* Чтобы кнопки стали частью грида или флекса */
+        }
+        #game-screen.mode-image .choice-btn {
+            width: 15%; /* Узкие кнопки по бокам */
+            height: 100vh;
+            border: none; cursor: pointer;
+            writing-mode: vertical-rl; text-orientation: mixed; /* Вертикальный текст */
+            font-size: 1.5rem; font-weight: 800; letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            z-index: 20;
+        }
+        #game-screen.mode-image .btn-left { 
+            order: 1; /* Слева */
+            background: #1a1a1a; border-right: 1px solid #333; 
+            color: var(--news-color);
+        }
+        #game-screen.mode-image .btn-right { 
+            order: 3; /* Справа */
+            background: #1a1a1a; border-left: 1px solid #333;
+            color: var(--panorama-color);
+        }
+        #game-screen.mode-image .btn-left:hover { background: var(--news-color); color: #000; width: 18%; }
+        #game-screen.mode-image .btn-right:hover { background: var(--panorama-color); color: #000; width: 18%; }
+
+        /* Центральная область с картинкой */
+        #game-screen.mode-image .news-display {
+            order: 2; flex-grow: 1;
+            position: relative;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #000;
+        }
+        #game-screen.mode-image .img-container {
+            max-width: 80%; max-height: 70vh;
+            border: 2px solid #333; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        #game-screen.mode-image .main-image {
+            width: 100%; height: 100%; object-fit: contain; display: block;
+        }
+        #game-screen.mode-image .news-text {
+            margin-top: 20px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 80%;
+            z-index: 2;
+        }
+        #game-screen.mode-image .news-overlay { display: none; } /* Оверлей не нужен */
+
+        /* Оверлей результатов */
         #result-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -158,7 +213,6 @@
         <p class="status-text" id="status-text">Подключение к базе новостей...</p>
         <div class="timer-msg hidden" id="come-back-msg"></div>
 
-        <!-- Админ панель -->
         <div id="admin-panel">
             <h3>Dev Tools</h3>
             <label style="font-size:0.8rem; color:#888;">Дата симуляции:</label>
@@ -168,13 +222,22 @@
     </div>
 
     <!-- Экран 2: Игра -->
-    <div id="game-screen" class="screen hidden">
+    <!-- Класс mode-text или mode-image будет добавляться через JS -->
+    <div id="game-screen" class="screen hidden mode-text">
         <div class="progress-container" id="progress-bar"></div>
-        <div class="news-display" id="news-img">
+        
+        <div class="region-badge" id="region-badge">RU</div>
+
+        <div class="news-display" id="news-display-area">
             <div class="news-overlay"></div>
-            <div class="region-badge" id="region-badge">RU</div>
+            <!-- Для IMAGE режима -->
+            <div class="img-container hidden" id="img-container">
+                <img src="" class="main-image" id="main-image-el">
+            </div>
+            
             <div class="news-text" id="news-headline">Загрузка...</div>
         </div>
+
         <div class="controls-area">
             <button class="choice-btn btn-left" onclick="checkAnswer('REAL')">НОВОСТЬ</button>
             <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')">ПАНОРАМА</button>
@@ -193,27 +256,18 @@
         <h2>Результат дня</h2>
         <div class="final-score" id="final-score">0/10</div>
         <div class="final-rank" id="final-rank">Звание</div>
-        
-        <div class="results-list" id="results-list">
-            <!-- Сюда попадут результаты -->
-        </div>
-
+        <div class="results-list" id="results-list"></div>
         <button class="btn-start" onclick="location.reload()">В МЕНЮ</button>
     </div>
 
     <script>
-        // Код игры Panoramdle
-        
         let fullDb = [];
         let dailySet = [];
-        let userAnswers = []; // Хранит историю ответов для финала
+        let userAnswers = []; 
         let currentQ = 0;
         let score = 0;
         
-        // По умолчанию берем сегодняшнюю дату, но если есть в localStorage (от админки) - берем её
         let todayStr = localStorage.getItem('devOverrideDate') || new Date().toISOString().slice(0, 10);
-        
-        // Установка даты в инпут админки
         document.getElementById('dev-date-input').value = todayStr;
 
         // --- SEEDED RANDOM ---
@@ -225,7 +279,6 @@
                 return ((t ^ t >>> 14) >>> 0) / 4294967296;
             }
         }
-        
         function getDateSeed(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -234,7 +287,6 @@
             }
             return Math.abs(hash);
         }
-
         const seed = getDateSeed(todayStr);
         const random = mulberry32(seed); 
 
@@ -246,100 +298,66 @@
             return array;
         }
 
-        // --- АДМИНКА ---
         function applyDevDate() {
             const val = document.getElementById('dev-date-input').value;
             if(val) {
                 localStorage.setItem('devOverrideDate', val);
-                // Очищаем историю игры для этой даты, чтобы можно было перепройти
                 localStorage.removeItem('lastPlayedDate'); 
                 location.reload();
             }
         }
 
-        // --- ЗАГРУЗКА ---
         window.addEventListener('DOMContentLoaded', async () => {
             const startBtn = document.getElementById('start-btn');
             const statusText = document.getElementById('status-text');
             const comeBackMsg = document.getElementById('come-back-msg');
 
             try {
-                // 1. Проверка LocalStorage
-                // Сравниваем не просто с "сегодня", а с "активной датой" (которая может быть изменена через админку)
                 const lastPlayed = localStorage.getItem('lastPlayedDate');
-                
-                // Если дата в памяти совпадает с текущей активной датой
                 if (lastPlayed === todayStr) {
-                    comeBackMsg.innerHTML = `Вы уже играли за дату <strong>${todayStr}</strong>.<br>Сбросьте дату в Dev Tools ниже, чтобы сыграть за другой день.`;
+                    comeBackMsg.innerHTML = `Вы уже играли за дату <strong>${todayStr}</strong>.<br>Сбросьте дату в Dev Tools ниже.`;
                     comeBackMsg.classList.remove('hidden');
-                    startBtn.innerText = "СЫГРАТЬ ЕЩЁ РАЗ";
+                    startBtn.innerText = "РЕЗУЛЬТАТЫ"; 
                 } else {
                     startBtn.innerText = "НАЧАТЬ";
                 }
 
-                // 2. Загрузка базы
-                statusText.innerText = "Загрузка базы данных...";
-                
+                statusText.innerText = "Загрузка базы...";
                 const response = await fetch('news.json');
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка загрузки news.json: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
                 const responseText = await response.text();
+                if (responseText.trim().startsWith('<')) throw new Error("Неверный формат JSON");
                 
-                if (responseText.trim().startsWith('<')) {
-                    throw new Error("Сервер вернул HTML вместо JSON.");
-                }
+                fullDb = JSON.parse(responseText);
+                if (!Array.isArray(fullDb) || fullDb.length === 0) throw new Error("База пуста");
 
-                try {
-                    fullDb = JSON.parse(responseText);
-                } catch (jsonErr) {
-                    throw new Error(`Ошибка синтаксиса JSON: ${jsonErr.message}`);
-                }
-
-                if (!Array.isArray(fullDb) || fullDb.length === 0) {
-                    throw new Error("Файл news.json пуст.");
-                }
-
-                statusText.innerHTML = `База: ${fullDb.length} новостей. <br>Дата сида: ${todayStr}`;
+                statusText.innerHTML = `База: ${fullDb.length} шт. <br>Дата: ${todayStr}`;
                 statusText.style.color = "#22c55e";
-
-                // 3. Генерация
                 generateDailySet();
-                
                 startBtn.disabled = false;
                 
-            } catch (globalError) {
-                console.error(globalError);
-                statusText.innerHTML = `ОШИБКА: ${globalError.message}`;
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "ОШИБКА: " + err.message;
                 statusText.style.color = "#ef4444";
-                startBtn.innerText = "ОШИБКА";
-                startBtn.style.background = "#333";
             }
         });
 
-        // --- ГЕНЕРАЦИЯ ---
         function generateDailySet() {
             const realNews = fullDb.filter(item => item.type === 'REAL');
             const fakeNews = fullDb.filter(item => item.type === 'FAKE');
-
             shuffleArray(realNews);
             shuffleArray(fakeNews);
 
-            const realCount = 4 + Math.floor(random() * 3);
+            const realCount = 4 + Math.floor(random() * 3); 
             const fakeCount = 10 - realCount;
-
-            const safeRealCount = Math.min(realCount, realNews.length);
-            const safeFakeCount = Math.min(fakeCount, fakeNews.length);
-
-            dailySet = [...realNews.slice(0, safeRealCount), ...fakeNews.slice(0, safeFakeCount)];
-            shuffleArray(dailySet);
+            const dailySetRaw = [...realNews.slice(0, realCount), ...fakeNews.slice(0, fakeCount)];
+            
+            dailySet = shuffleArray(dailySetRaw);
         }
 
-        // --- ИГРА ---
         function startGame() {
-            if(dailySet.length === 0) return alert("Вопросы не загружены!");
+            if(dailySet.length === 0) return alert("База пуста!");
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             initDots();
@@ -359,12 +377,41 @@
 
         function loadQuestion() {
             if (currentQ >= dailySet.length) return showResults();
-            const q = dailySet[currentQ];
-            document.getElementById('news-headline').innerText = q.text;
-            document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
-            const region = q.region ? q.region.toUpperCase() : "WORLD";
-            document.getElementById('region-badge').innerText = region;
             
+            const q = dailySet[currentQ];
+            const screen = document.getElementById('game-screen');
+            const displayArea = document.getElementById('news-display-area');
+            const headline = document.getElementById('news-headline');
+            const imgContainer = document.getElementById('img-container');
+            const mainImg = document.getElementById('main-image-el');
+
+            // 1. Определение режима (TEXT или IMAGE)
+            // Если в JSON нет поля mode, считаем его 'text'
+            const mode = q.mode || 'text'; 
+
+            // Сброс классов
+            screen.classList.remove('mode-text', 'mode-image');
+            screen.classList.add('mode-' + mode);
+
+            // Текст вопроса
+            headline.innerText = q.text;
+            
+            // Регион
+            document.getElementById('region-badge').innerText = q.region ? q.region.toUpperCase() : "WORLD";
+
+            // 2. Настройка отображения в зависимости от режима
+            if (mode === 'text') {
+                // Текстовый режим: картинка на фоне
+                displayArea.style.backgroundImage = `url('${q.img}')`;
+                imgContainer.classList.add('hidden');
+            } else {
+                // Картинка: фон черный, картинка в контейнере
+                displayArea.style.backgroundImage = 'none';
+                imgContainer.classList.remove('hidden');
+                mainImg.src = q.img;
+            }
+
+            // Точки прогресса
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             if(document.getElementById('dot-'+currentQ)) {
                 document.getElementById('dot-'+currentQ).classList.add('active');
@@ -379,13 +426,7 @@
             const desc = document.getElementById('res-desc');
             const dot = document.getElementById('dot-'+currentQ);
 
-            // Сохраняем результат для финального списка
-            userAnswers.push({
-                text: q.text,
-                isCorrect: isCorrect,
-                link: q.link,
-                type: q.type
-            });
+            userAnswers.push({ text: q.text, isCorrect: isCorrect, link: q.link, type: q.type });
 
             overlay.className = ''; 
             if (isCorrect) {
@@ -413,12 +454,9 @@
         }
 
         function showResults() {
-            // Сохраняем факт игры именно за эту дату (todayStr)
             localStorage.setItem('lastPlayedDate', todayStr);
-
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
-            
             document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
             
             const percent = score / dailySet.length;
@@ -426,29 +464,16 @@
             if(percent > 0.4) rank = "Опытный серфер";
             if(percent > 0.7) rank = "Грандмастер постиронии";
             if(percent === 1) rank = "Бог новостной ленты";
-            
             document.getElementById('final-rank').innerText = rank;
 
-            // Генерация списка результатов
             const listContainer = document.getElementById('results-list');
             listContainer.innerHTML = '';
-            
             userAnswers.forEach(ans => {
                 const item = document.createElement('div');
                 item.className = 'result-item';
-                
                 const icon = ans.isCorrect ? '<span style="color:#22c55e">✔</span>' : '<span style="color:#ef4444">✘</span>';
-                
-                let linkHtml = '';
-                if(ans.link && ans.link.length > 5) {
-                    linkHtml = `<a href="${ans.link}" target="_blank" class="res-link">Источник</a>`;
-                }
-
-                item.innerHTML = `
-                    <div class="res-icon">${icon}</div>
-                    <div class="res-text">${ans.text}</div>
-                    ${linkHtml}
-                `;
+                let linkHtml = ans.link && ans.link.length > 5 ? `<a href="${ans.link}" target="_blank" class="res-link">Источник</a>` : '';
+                item.innerHTML = `<div class="res-icon">${icon}</div><div class="res-text">${ans.text}</div>${linkHtml}`;
                 listContainer.appendChild(item);
             });
         }
