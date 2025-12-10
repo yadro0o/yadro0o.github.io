@@ -4,397 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panoramdle</title>
-    <!-- Подключаем стильные шрифты -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            /* Палитра */
-            --news-color: #2563eb;    /* Более глубокий синий */
-            --panorama-color: #d97706; /* Более благородный оранжевый */
-            --success-color: #10b981;
+            --news-color: #3b82f6;
+            --panorama-color: #f59e0b;
+            --success-color: #22c55e;
             --error-color: #ef4444;
-            
-            --bg-dark: #09090b;       /* Очень темный, почти черный */
-            --bg-panel: rgba(255, 255, 255, 0.03);
-            --border-color: rgba(255, 255, 255, 0.1);
-            
-            --text-main: #ffffff;
-            --text-muted: #a1a1aa;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --disabled-color: #333333;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
         
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            overflow: hidden; 
-            height: 100vh;
-        }
-        
-        /* Общие стили экрана */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            background: radial-gradient(circle at center, #18181b 0%, #000000 100%); /* Легкий градиент */
+            transition: opacity 0.3s ease;
             z-index: 10;
         }
-        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+        .hidden { display: none !important; }
 
-        /* --- ГЛАВНЫЙ ЭКРАН --- */
-        #start-screen { padding: 40px; }
-        
-        h1#logo { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 4rem; 
-            margin-bottom: 0.5rem; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 4px; 
-            cursor: pointer; 
-            user-select: none;
-            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: transform 0.3s ease;
+        /* Главная */
+        #start-screen {
+            background: #000;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+            /* position: relative;  <-- убрал, чтобы экран снова занимал 100% высоты */
         }
-        h1#logo:hover { transform: scale(1.02); }
-
-        .subtitle { 
-            color: var(--text-muted); 
-            margin-bottom: 3rem; 
-            font-size: 1.1rem; 
-            font-weight: 400; 
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
+        .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
         
         .btn-start {
-            padding: 18px 60px; 
-            font-size: 1.2rem; 
-            background: var(--text-main); 
-            color: #000; 
-            border: none;
-            text-transform: uppercase; 
-            font-weight: 800; 
-            letter-spacing: 1px;
-            border-radius: 2px; /* Строгие углы (чуть скругленные) */
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            padding: 15px 40px; font-size: 1.5rem; background: #fff; color: #000; border: none;
+            text-transform: uppercase; font-weight: bold; transition: transform 0.2s;
+            border-radius: 5px; cursor: pointer;
         }
-        .btn-start:hover:not(:disabled) { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
-            background: #fff;
-        }
-        .btn-start:disabled { 
-            background-color: #333; 
-            color: #666; 
-            cursor: not-allowed; 
-            box-shadow: none;
-        }
+        .btn-start:hover:not(:disabled) { transform: scale(1.05); }
+        .btn-start:disabled { background-color: var(--disabled-color); color: #888; cursor: not-allowed; }
         
-        .status-text { 
-            margin-top: 25px; 
-            color: #52525b; 
-            font-size: 0.85rem; 
-            font-family: monospace; /* Технический стиль */
-        }
+        .status-text { margin-top: 15px; color: #666; font-size: 0.9rem; max-width: 600px; line-height: 1.4; }
         
-        /* Сообщение о таймере */
         .timer-msg { 
-            margin-top: 30px; 
-            color: var(--text-muted); 
-            font-size: 0.9rem; 
-            background: rgba(255,255,255,0.05); 
-            padding: 15px 25px; 
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
+            margin-top: 20px; color: #aaa; font-size: 1rem; line-height: 1.5;
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
+            border: 1px dashed #444; max-width: 400px;
         }
 
-        /* Dev Tools */
         #admin-panel {
-            margin-top: 40px; 
-            padding: 20px; 
-            background: rgba(0,0,0,0.8); 
-            border: 1px solid #333; 
-            border-radius: 12px;
-            text-align: left; 
-            min-width: 250px;
+            margin-top: 40px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+            text-align: left; max-width: 300px;
             display: none;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        #admin-panel.visible { display: block; animation: fadeIn 0.3s ease; }
-        #admin-panel h3 { margin-bottom: 15px; font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        #admin-panel input { 
-            width: 100%; padding: 10px; margin-bottom: 15px; 
-            background: #222; border: 1px solid #444; 
-            color: #fff; border-radius: 6px; 
-            font-family: monospace;
-        }
-        #admin-panel button { 
-            width: 100%; padding: 10px; cursor: pointer; 
-            background: #333; color: #fff; 
-            border: 1px solid #444; border-radius: 6px; 
-            transition: 0.2s; 
-        }
-        #admin-panel button:hover { background: #444; }
+        #admin-panel.visible { display: block; }
+        #admin-panel h3 { margin-bottom: 10px; font-size: 1rem; color: #888; text-transform: uppercase; }
+        #admin-panel input { width: 100%; padding: 8px; margin-bottom: 10px; background: #333; border: none; color: #fff; border-radius: 4px; }
+        #admin-panel button { padding: 5px 15px; cursor: pointer; background: #444; color: #fff; border: none; border-radius: 4px; }
+        #admin-panel button:hover { background: #555; }
 
-        /* Telegram Link */
         .tg-link {
-            position: absolute; left: 30px; bottom: 30px;
-            width: 50px; height: 50px;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: rgba(34, 158, 217, 0.1); /* Полупрозрачный фон */
-            border: 1px solid rgba(34, 158, 217, 0.3);
-            display: flex; align-items: center; justify-content: center;
+            background: #229ED9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            color: #229ED9;
-            font-weight: 700; font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .tg-link:hover {
-            background: #229ED9; color: #fff;
-            box-shadow: 0 0 20px rgba(34, 158, 217, 0.4);
-            transform: scale(1.1);
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
         }
 
-        /* --- ИГРОВОЙ ЭКРАН --- */
+        /* ИГРОВОЙ ЭКРАН - ОБЩЕЕ */
         #game-screen {
-            background: var(--bg-dark);
-            transition: background-color 0.4s ease; /* Плавная смена фона */
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            transition: background-color 0.25s ease;
         }
         
         .progress-container {
-            position: absolute; top: 30px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 12px; z-index: 50;
+            position: absolute; top: 20px; left: 0; width: 100%;
+            display: flex; justify-content: center; gap: 10px; z-index: 50;
         }
-        .dot { 
-            width: 8px; height: 8px; 
-            border-radius: 50%; 
-            background: rgba(255,255,255,0.1); 
-            transition: all 0.4s ease; 
-        }
-        .dot.active { background: #fff; transform: scale(1.5); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .dot.correct { background: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
-        .dot.wrong { background: var(--error-color); box-shadow: 0 0 8px var(--error-color); }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s; }
+        .dot.correct { background: var(--success-color); box-shadow: 0 0 10px var(--success-color); }
+        .dot.wrong { background: var(--error-color); box-shadow: 0 0 10px var(--error-color); }
+        .dot.active { background: #fff; transform: scale(1.3); }
 
         .region-badge {
-            position: absolute; top: 30px; right: 30px; z-index: 55;
-            background: rgba(255,255,255,0.05); 
-            padding: 6px 12px; border-radius: 4px;
-            font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-            color: var(--text-muted);
+            position: absolute; top: 20px; right: 20px; z-index: 55;
+            background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+            backdrop-filter: blur(5px);
         }
 
-        /* КНОПКИ ВЫБОРА (Общие) */
-        .controls-area { display: flex; width: 100%; }
-        
-        .choice-btn {
-            border: none; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800; text-transform: uppercase; 
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        /* Тонкие линии вместо грубых рамок */
-        .btn-left { border-right: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
-        .btn-right { border-left: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
-
-        .btn-left span, .btn-right span {
-            position: relative; z-index: 2;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* --- MODE: TEXT --- */
+        /* --- TEXT --- */
         #game-screen.mode-text .news-display {
-            position: relative; height: 40vh; width: 100%;
+            position: relative; height: 35vh; width: 100%;
             background-size: cover; background-position: center;
             display: flex; align-items: flex-end; 
-            /* Добавляем маску снизу, чтобы текст читался лучше */
-            mask-image: linear-gradient(to bottom, black 80%, transparent 100%); 
         }
         #game-screen.mode-text .news-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            /* Градиент более глубокий */
-            background: linear-gradient(to top, var(--bg-dark) 10%, rgba(9,9,11,0.8) 50%, rgba(9,9,11,0.4) 100%);
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             z-index: 1;
         }
         #game-screen.mode-text .news-text {
-            position: relative; z-index: 2; padding: 0 40px 40px 40px; width: 100%;
+            position: relative; z-index: 2; padding: 20px; width: 100%;
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
-            line-height: 1.1;
+            font-weight: 700;
+            text-shadow: 0 2px 4px #000;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            line-height: 1.25;
         }
-        #game-screen.mode-text .controls-area { height: 60vh; }
+        #game-screen.mode-text .controls-area { height: 65vh; width: 100%; display: flex; }
         #game-screen.mode-text .choice-btn {
-            width: 50%; height: 100%; 
-            font-size: 2.5rem; color: rgba(255,255,255,0.4);
-            letter-spacing: 2px;
+            width: 50%; height: 100%; border: none; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 2rem; font-weight: 900; text-transform: uppercase;
+            transition: all 0.3s ease; color: rgba(255,255,255,0.7);
         }
-        #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.2; }
-        #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.2; }
+        #game-screen.mode-text .btn-left { background-color: #1a1a1a; border-right: 1px solid #333; }
+        #game-screen.mode-text .btn-right { background-color: #1a1a1a; }
+        #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
+        #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
-        /* --- MODE: IMAGE --- */
-        #game-screen.mode-image { flex-direction: row; }
-        #game-screen.mode-image .controls-area { display: contents; }
+        /* --- IMAGE --- */
+        #game-screen.mode-image {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #game-screen.mode-image .controls-area {
+            display: contents;
+        }
         
         #game-screen.mode-image .choice-btn {
-            width: 25%; height: 100vh;
-            font-size: 1.5rem; letter-spacing: 2px;
-            color: rgba(255,255,255,0.5);
-            background: rgba(0,0,0,0.2); /* Чуть темнее */
+            width: 25%;
+            height: 100vh;
+            border: none; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.8rem; font-weight: 900; letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
             z-index: 20;
+            color: rgba(255,255,255,0.6);
+            writing-mode: horizontal-tb;
         }
-        
-        /* Активные цвета при наведении */
-        #game-screen.mode-image .btn-left:hover { background: var(--news-color); color: #fff; width: 35%; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-        #game-screen.mode-image .btn-right:hover { background: var(--panorama-color); color: #fff; width: 35%; box-shadow: -20px 0 50px rgba(0,0,0,0.5); }
 
-        /* Центральная часть с картинкой */
+        #game-screen.mode-image .choice-btn span {
+            display: block;
+            transform: none;
+        }
+
+        #game-screen.mode-image .btn-left { 
+            order: 1;
+            background: #1a1a1a; border-right: 1px solid #333; 
+        }
+        #game-screen.mode-image .btn-right { 
+            order: 3;
+            background: #1a1a1a; border-left: 1px solid #333;
+        }
+
+        #game-screen.mode-image .btn-left:hover { 
+            background: var(--news-color); color: #fff; 
+            width: 35%;
+        }
+        #game-screen.mode-image .btn-right:hover { 
+            background: var(--panorama-color); color: #fff; 
+            width: 35%;
+        }
+
         #game-screen.mode-image .news-display {
             order: 2; flex-grow: 1;
             position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: transparent; /* Цвет задается через JS на container */
-            transition: all 0.4s ease;
+            background: #000;
+            transition: background-color 0.25s ease;
         }
         
         #game-screen.mode-image .img-container {
-            width: 85%; max-height: 60vh;
-            border-radius: 12px; 
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 90%;
+            max-height: 50vh;
+            border: 2px solid #333; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
             display: flex; justify-content: center; align-items: center;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.1); /* Строгая рамка */
-            transition: all 0.4s ease;
-            position: relative;
+            background: #222;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
-        
         #game-screen.mode-image .main-image {
             width: 100%; height: 100%; object-fit: contain; display: block;
         }
-        
         #game-screen.mode-image .news-text {
-            margin-top: 30px; 
-            font-size: 1.1rem; 
-            text-align: center; 
-            color: var(--text-main); 
-            max-width: 70%;
-            font-weight: 500;
-            line-height: 1.5;
+            margin-top: 25px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 80%;
             z-index: 2;
-            padding: 15px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.05);
         }
         #game-screen.mode-image .news-overlay { display: none; }
 
-        /* --- РЕЗУЛЬТАТЫ (OVERLAY) --- */
+        /* Оверлей результатов */
         #result-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100; text-align: center; padding: 20px;
-            opacity: 0; pointer-events: none; 
-            transition: opacity 0.3s, backdrop-filter 0.3s;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
-        #result-overlay.show { 
-            opacity: 1; pointer-events: auto; 
-            backdrop-filter: blur(15px); /* Сильное размытие фона */
-        }
+        #result-overlay.show { opacity: 1; pointer-events: auto; }
+        #result-overlay.correct-bg { background-color: rgba(34, 197, 94, 0.95); }
+        #result-overlay.wrong-bg { background-color: rgba(239, 68, 68, 0.95); }
         
-        /* Используем полупрозрачные цвета для стекла */
-        #result-overlay.correct-bg { background-color: rgba(16, 185, 129, 0.85); }
-        #result-overlay.wrong-bg { background-color: rgba(239, 68, 68, 0.85); }
-        
-        .res-tag { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 5rem; font-weight: 900; margin-bottom: 20px; 
-            text-transform: uppercase; letter-spacing: -2px;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .res-explanation { 
-            font-size: 1.3rem; margin-bottom: 40px; max-width: 600px; line-height: 1.5; 
-            font-weight: 500;
-        }
+        .res-tag { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+        .res-explanation { font-size: 1.5rem; margin-bottom: 30px; max-width: 600px; line-height: 1.4; }
         
         .source-link {
-            display: inline-flex; align-items: center; margin-top: 10px; padding: 8px 16px;
-            background: rgba(0,0,0,0.2); 
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px; color: #fff; text-decoration: none;
-            font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; margin-top: 15px; padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px; color: #fff; text-decoration: none;
+            font-size: 1rem; font-weight: 600; transition: all 0.2s;
         }
-        .source-link:hover { background: #fff; color: #000; }
+        .source-link:hover { background-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
         
         .btn-next {
-            margin-top: 20px; padding: 15px 50px; 
-            font-size: 1.2rem; background: #fff; color: #000;
-            border: none; border-radius: 4px; cursor: pointer; font-weight: 800; letter-spacing: 1px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+            margin-top: 30px; padding: 15px 50px; font-size: 1.2rem; background: #fff; color: #000;
+            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .btn-next:hover { transform: scale(1.05); }
 
-        /* --- ФИНАЛ --- */
-        #final-screen { padding: 40px 20px; }
-        #final-screen h2 { font-family: 'Montserrat'; text-transform: uppercase; font-size: 2rem; margin-bottom: 10px;}
-        
-        .final-score { 
-            font-size: 6rem; font-weight: 900; color: var(--success-color); 
-            margin: 10px 0; letter-spacing: -3px;
-        }
-        .final-rank { 
-            font-size: 1.5rem; color: var(--text-muted); margin-bottom: 40px; 
-            text-transform: uppercase; letter-spacing: 2px;
-            border-bottom: 1px solid #333; padding-bottom: 20px; display: inline-block;
-        }
+        /* Финал */
+        #final-screen { background: #111; text-align: center; overflow-y: auto; justify-content: flex-start; padding: 40px 20px; }
+        .final-score { font-size: 4rem; font-weight: bold; color: var(--success-color); margin-top: 20px; }
+        .final-rank { font-size: 1.5rem; color: #aaa; margin-bottom: 30px; }
         
         .results-list {
-            width: 100%; max-width: 700px; margin: 0 auto 40px;
-            text-align: left; 
-            background: var(--bg-panel); 
-            border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 10px;
+            width: 100%; max-width: 600px; margin: 0 auto 30px;
+            text-align: left; background: #1a1a1a; border-radius: 10px; padding: 20px;
         }
         .result-item {
-            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); 
-            display: flex; align-items: center; justify-content: space-between;
-            transition: background 0.2s;
+            padding: 10px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between;
         }
-        .result-item:hover { background: rgba(255,255,255,0.02); }
         .result-item:last-child { border-bottom: none; }
+        .res-icon { font-size: 1.2rem; margin-right: 10px; }
+        .res-text { flex-grow: 1; font-size: 0.9rem; margin-right: 10px; }
+        .res-link { color: var(--news-color); text-decoration: none; font-size: 0.8rem; border: 1px solid #333; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+        .res-link:hover { background: #333; }
         
-        .res-icon { font-size: 1.2rem; margin-right: 15px; }
-        .res-text { flex-grow: 1; font-size: 1rem; color: #e4e4e7; margin-right: 15px; font-weight: 500; }
-        .res-link { 
-            color: var(--news-color); text-decoration: none; font-size: 0.75rem; 
-            border: 1px solid rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px; 
-            white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;
-            transition: 0.2s;
-        }
-        .res-link:hover { background: var(--news-color); color: #fff; border-color: transparent; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -510,29 +372,31 @@
                 adminPanel.classList.toggle('visible');
             });
 
-            // Эффекты наведения
             const leftBtn = document.querySelector('#game-screen .btn-left');
             const rightBtn = document.querySelector('#game-screen .btn-right');
             const displayArea = document.getElementById('news-display-area');
             const imgContainer = document.getElementById('img-container');
             const gameScreen = document.getElementById('game-screen');
-            
-            // Цвета берем из CSS переменных для синхронизации
             const rootStyles = getComputedStyle(document.documentElement);
-            const newsColor = rootStyles.getPropertyValue('--news-color').trim();
-            const panoColor = rootStyles.getPropertyValue('--panorama-color').trim();
-            const darkBg = rootStyles.getPropertyValue('--bg-dark').trim();
+            const newsColor = rootStyles.getPropertyValue('--news-color').trim() || '#3b82f6';
+            const panoColor = rootStyles.getPropertyValue('--panorama-color').trim() || '#f59e0b';
+
+            const defaultGameBg = '#111';
+            const defaultDisplayBg = '#000';
+            const defaultImgBg = '#222';
 
             function setImageBg(color) {
                 if (!gameScreen.classList.contains('mode-image')) return;
+                // Заливаем весь фон игры и центральный блок с картинкой
                 gameScreen.style.backgroundColor = color;
-                // Картинка тоже получает легкий оттенок рамки
-                imgContainer.style.borderColor = 'rgba(255,255,255,0.4)';
+                displayArea.style.backgroundColor = color;
+                imgContainer.style.backgroundColor = color;
             }
             function resetImageBg() {
                 if (!gameScreen.classList.contains('mode-image')) return;
-                gameScreen.style.backgroundColor = darkBg;
-                imgContainer.style.borderColor = 'rgba(255,255,255,0.1)';
+                gameScreen.style.backgroundColor = defaultGameBg;
+                displayArea.style.backgroundColor = defaultDisplayBg;
+                imgContainer.style.backgroundColor = defaultImgBg;
             }
 
             leftBtn.addEventListener('mouseenter', () => setImageBg(newsColor));
@@ -554,19 +418,20 @@
                 const response = await fetch('news.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
                 const responseText = await response.text();
+                if (responseText.trim().startsWith('<')) throw new Error("Неверный формат JSON");
                 
                 fullDb = JSON.parse(responseText);
                 if (!Array.isArray(fullDb) || fullDb.length === 0) throw new Error("База пуста");
 
                 statusText.innerHTML = `База: ${fullDb.length} шт. <br>Дата: ${todayStr}`;
-                statusText.style.color = "var(--success-color)";
+                statusText.style.color = "#22c55e";
                 generateDailySet();
                 startBtn.disabled = false;
                 
             } catch (err) {
                 console.error(err);
                 statusText.innerText = "ОШИБКА: " + err.message;
-                statusText.style.color = "var(--error-color)";
+                statusText.style.color = "#ef4444";
             }
         });
 
@@ -584,12 +449,16 @@
             const realCount = 4 + Math.floor(random() * 3); 
             const fakeCount = 10 - realCount;
             
-            let combined = [...realNews.slice(0, realCount), ...fakeNews.slice(0, fakeCount)];
-            // Добиваем если не хватило
+            const safeReal = realNews.slice(0, realCount);
+            const safeFake = fakeNews.slice(0, fakeCount);
+            
+            let combined = [...safeReal, ...safeFake];
             if (combined.length < 10) {
-                 const remaining = [...realNews.slice(realCount), ...fakeNews.slice(fakeCount)];
-                 shuffleArray(remaining);
-                 combined = combined.concat(remaining.slice(0, 10 - combined.length));
+                 const remainingReal = realNews.slice(realCount);
+                 const remainingFake = fakeNews.slice(fakeCount);
+                 const extras = [...remainingReal, ...remainingFake];
+                 shuffleArray(extras);
+                 combined = combined.concat(extras.slice(0, 10 - combined.length));
             }
 
             dailySet = shuffleArray(combined);
@@ -628,27 +497,35 @@
 
             gameScreen.classList.remove('mode-text', 'mode-image');
             gameScreen.classList.add('mode-' + mode);
-            
-            // Сброс inline стилей
-            gameScreen.style.backgroundColor = '';
 
             headline.innerText = q.text;
             document.getElementById('region-badge').innerText = q.region ? q.region.toUpperCase() : "WORLD";
 
             if (mode === 'text') {
+                gameScreen.style.backgroundColor = '#111';
                 displayArea.style.backgroundImage = `url('${q.img}')`;
+                displayArea.style.backgroundColor = 'transparent';
                 imgContainer.classList.add('hidden');
+                imgContainer.style.backgroundColor = '#222';
 
                 const len = (q.text || '').length;
-                let fs = '2.5rem';
-                if (len > 140) fs = '1.6rem';
-                else if (len > 90) fs = '2rem';
+                let fs = '2.2rem';
+                if (len > 140) {
+                    fs = '1.4rem';
+                } else if (len > 90) {
+                    fs = '1.7rem';
+                } else if (len > 60) {
+                    fs = '2rem';
+                }
                 headline.style.fontSize = fs;
             } else {
+                gameScreen.style.backgroundColor = '#111';
                 displayArea.style.backgroundImage = 'none';
+                displayArea.style.backgroundColor = '#000';
                 imgContainer.classList.remove('hidden');
+                imgContainer.style.backgroundColor = '#222';
                 mainImg.src = q.img || '';
-                headline.style.fontSize = '1.2rem';
+                headline.style.fontSize = '1.4rem';
             }
 
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
@@ -670,12 +547,12 @@
             overlay.className = ''; 
             if (isCorrect) {
                 overlay.classList.add('show', 'correct-bg');
-                tag.innerText = "ВЕРНО";
+                tag.innerText = "ВЕРНО!";
                 score++;
                 if(dot) dot.classList.add('correct');
             } else {
                 overlay.classList.add('show', 'wrong-bg');
-                tag.innerText = "ОШИБКА";
+                tag.innerText = "ОШИБКА!";
                 if(dot) dot.classList.add('wrong');
             }
             
@@ -699,10 +576,10 @@
             document.getElementById('final-score').innerText = `${score} / ${dailySet.length}`;
             
             const percent = score / dailySet.length;
-            let rank = "Новичок";
-            if(percent > 0.4) rank = "Бывалый";
-            if(percent > 0.7) rank = "Эксперт";
-            if(percent === 1) rank = "Провидец";
+            let rank = "Новичок интернета";
+            if(percent > 0.4) rank = "Опытный серфер";
+            if(percent > 0.7) rank = "Грандмастер постиронии";
+            if(percent === 1) rank = "Бог новостной ленты";
             document.getElementById('final-rank').innerText = rank;
 
             const listContainer = document.getElementById('results-list');
@@ -710,8 +587,8 @@
             userAnswers.forEach(ans => {
                 const item = document.createElement('div');
                 item.className = 'result-item';
-                const icon = ans.isCorrect ? '<span style="color:var(--success-color)">✔</span>' : '<span style="color:var(--error-color)">✘</span>';
-                let linkHtml = ans.link && ans.link.length > 5 ? `<a href="${ans.link}" target="_blank" class="res-link">INFO</a>` : '';
+                const icon = ans.isCorrect ? '<span style="color:#22c55e">✔</span>' : '<span style="color:#ef4444">✘</span>';
+                let linkHtml = ans.link && ans.link.length > 5 ? `<a href="${ans.link}" target="_blank" class="res-link">Источник</a>` : '';
                 item.innerHTML = `<div class="res-icon">${icon}</div><div class="res-text">${ans.text}</div>${linkHtml}`;
                 listContainer.appendChild(item);
             });
