@@ -102,26 +102,34 @@
         #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
         #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
-        /* --- РЕЖИМ 2: IMAGE (Новый) --- */
+        /* --- РЕЖИМ 2: IMAGE (Обновленный) --- */
         #game-screen.mode-image {
             display: flex; flex-direction: row; /* Горизонтальная раскладка */
             background: #111;
         }
 
-        /* Боковые кнопки для режима IMAGE */
         #game-screen.mode-image .controls-area {
-            display:contents; /* Чтобы кнопки стали частью грида или флекса */
+            display: contents; /* Кнопки становятся частью флекса */
         }
+        
         #game-screen.mode-image .choice-btn {
-            width: 15%; /* Узкие кнопки по бокам */
+            width: 10%; /* Узкие полоски */
             height: 100vh;
             border: none; cursor: pointer;
-            writing-mode: vertical-rl; text-orientation: mixed; /* Вертикальный текст */
+            display: flex; justify-content: center; align-items: center;
             font-size: 1.5rem; font-weight: 800; letter-spacing: 3px;
             text-transform: uppercase;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Плавная анимация */
             z-index: 20;
+            white-space: nowrap; /* Текст не переносится */
         }
+
+        /* Текст внутри кнопок поворачиваем на 90 градусов, чтобы он был "горизонтальным" относительно зрителя, но шел вдоль полоски */
+        #game-screen.mode-image .choice-btn span {
+            display: block;
+            transform: rotate(-90deg); 
+        }
+
         #game-screen.mode-image .btn-left { 
             order: 1; /* Слева */
             background: #1a1a1a; border-right: 1px solid #333; 
@@ -132,29 +140,43 @@
             background: #1a1a1a; border-left: 1px solid #333;
             color: var(--panorama-color);
         }
-        #game-screen.mode-image .btn-left:hover { background: var(--news-color); color: #000; width: 18%; }
-        #game-screen.mode-image .btn-right:hover { background: var(--panorama-color); color: #000; width: 18%; }
 
-        /* Центральная область с картинкой */
+        /* Эффект выдвижения */
+        #game-screen.mode-image .btn-left:hover { 
+            background: var(--news-color); color: #000; 
+            width: 25%; /* Расширяем сильно */
+        }
+        #game-screen.mode-image .btn-right:hover { 
+            background: var(--panorama-color); color: #000; 
+            width: 25%; 
+        }
+
+        /* Центральная область */
         #game-screen.mode-image .news-display {
             order: 2; flex-grow: 1;
             position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: #000;
         }
+        
+        /* Уменьшенный контейнер картинки */
         #game-screen.mode-image .img-container {
-            max-width: 80%; max-height: 70vh;
+            width: 40%; /* Ширина уменьшена */
+            max-height: 50vh; /* Высота уменьшена */
+            aspect-ratio: 16/9;
             border: 2px solid #333; border-radius: 10px; overflow: hidden;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
+            background: #222;
         }
         #game-screen.mode-image .main-image {
             width: 100%; height: 100%; object-fit: contain; display: block;
         }
         #game-screen.mode-image .news-text {
-            margin-top: 20px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 80%;
+            margin-top: 30px; font-size: 1.2rem; text-align: center; color: #ccc; max-width: 60%;
             z-index: 2;
         }
-        #game-screen.mode-image .news-overlay { display: none; } /* Оверлей не нужен */
+        #game-screen.mode-image .news-overlay { display: none; }
 
         /* Оверлей результатов */
         #result-overlay {
@@ -222,7 +244,6 @@
     </div>
 
     <!-- Экран 2: Игра -->
-    <!-- Класс mode-text или mode-image будет добавляться через JS -->
     <div id="game-screen" class="screen hidden mode-text">
         <div class="progress-container" id="progress-bar"></div>
         
@@ -239,8 +260,9 @@
         </div>
 
         <div class="controls-area">
-            <button class="choice-btn btn-left" onclick="checkAnswer('REAL')">НОВОСТЬ</button>
-            <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')">ПАНОРАМА</button>
+            <!-- Обернул текст в span для поворота -->
+            <button class="choice-btn btn-left" onclick="checkAnswer('REAL')"><span>НОВОСТЬ</span></button>
+            <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')"><span>ПАНОРАМА</span></button>
         </div>
     </div>
 
@@ -270,7 +292,6 @@
         let todayStr = localStorage.getItem('devOverrideDate') || new Date().toISOString().slice(0, 10);
         document.getElementById('dev-date-input').value = todayStr;
 
-        // --- SEEDED RANDOM ---
         function mulberry32(a) {
             return function() {
                 var t = a += 0x6D2B79F5;
@@ -385,33 +406,23 @@
             const imgContainer = document.getElementById('img-container');
             const mainImg = document.getElementById('main-image-el');
 
-            // 1. Определение режима (TEXT или IMAGE)
-            // Если в JSON нет поля mode, считаем его 'text'
             const mode = q.mode || 'text'; 
 
-            // Сброс классов
             screen.classList.remove('mode-text', 'mode-image');
             screen.classList.add('mode-' + mode);
 
-            // Текст вопроса
             headline.innerText = q.text;
-            
-            // Регион
             document.getElementById('region-badge').innerText = q.region ? q.region.toUpperCase() : "WORLD";
 
-            // 2. Настройка отображения в зависимости от режима
             if (mode === 'text') {
-                // Текстовый режим: картинка на фоне
                 displayArea.style.backgroundImage = `url('${q.img}')`;
                 imgContainer.classList.add('hidden');
             } else {
-                // Картинка: фон черный, картинка в контейнере
                 displayArea.style.backgroundImage = 'none';
                 imgContainer.classList.remove('hidden');
                 mainImg.src = q.img;
             }
 
-            // Точки прогресса
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             if(document.getElementById('dot-'+currentQ)) {
                 document.getElementById('dot-'+currentQ).classList.add('active');
