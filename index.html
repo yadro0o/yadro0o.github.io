@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новость или Панорама?</title>
+    <title>Daily Reality Check</title>
     <style>
         :root {
             --news-color: #3b82f6;
@@ -12,12 +12,12 @@
             --error-color: #ef4444;
             --bg-color: #121212;
             --text-color: #ffffff;
+            --disabled-color: #555555;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* --- Экраны --- */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -26,19 +26,24 @@
         }
         .hidden { display: none !important; }
 
-        /* --- Главная (Старт) --- */
-        #start-screen { background: #000; text-align: center; }
-        h1 { font-size: 3rem; margin-bottom: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        /* Главная */
+        #start-screen { background: #000; text-align: center; padding: 20px; }
+        h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
+        
         .btn-start {
             padding: 15px 40px; font-size: 1.5rem; background: #fff; color: #000; border: none; cursor: pointer;
             text-transform: uppercase; font-weight: bold; transition: transform 0.2s;
+            border-radius: 5px;
         }
-        .btn-start:hover { transform: scale(1.05); }
+        .btn-start:hover:not(:disabled) { transform: scale(1.05); }
+        .btn-start:disabled { background-color: var(--disabled-color); color: #888; cursor: not-allowed; transform: none; }
+        
+        .status-text { margin-top: 15px; color: #666; font-size: 0.9rem; }
+        .timer-msg { margin-top: 20px; color: var(--panorama-color); font-weight: bold; font-size: 1.2rem; }
 
-        /* --- Основная игра --- */
+        /* Игра */
         #game-screen { display: flex; flex-direction: column; }
-
-        /* Прогресс бар (кружки) */
         .progress-container {
             position: absolute; top: 20px; left: 0; width: 100%;
             display: flex; justify-content: center; gap: 10px; z-index: 50;
@@ -48,34 +53,29 @@
         .dot.wrong { background: var(--error-color); box-shadow: 0 0 10px var(--error-color); }
         .dot.active { background: #fff; transform: scale(1.3); }
 
-        /* Верхняя часть (Новость + Картинка) - 35% высоты */
         .news-display {
-            position: relative;
-            height: 35vh;
-            width: 100%;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: flex-end; /* Текст внизу */
+            position: relative; height: 35vh; width: 100%;
+            background-size: cover; background-position: center;
+            display: flex; align-items: flex-end;
         }
-        
-        /* Градиент (Fading) снизу вверх */
         .news-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0) 100%);
             z-index: 1;
         }
-
         .news-text {
             position: relative; z-index: 2; padding: 20px; width: 100%;
             text-align: center; font-size: 1.4rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
             margin-bottom: 10px;
         }
-
-        /* Нижняя часть (Кнопки выбора) - 65% высоты */
-        .controls-area {
-            height: 65vh; width: 100%; display: flex;
+        .region-badge {
+            position: absolute; top: 20px; right: 20px; z-index: 5;
+            background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+            backdrop-filter: blur(5px);
         }
+
+        .controls-area { height: 65vh; width: 100%; display: flex; }
         .choice-btn {
             width: 50%; height: 100%; border: none; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
@@ -84,11 +84,10 @@
         }
         .btn-left { background-color: #1a1a1a; border-right: 1px solid #333; }
         .btn-right { background-color: #1a1a1a; }
-        
         .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.2; }
         .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.2; }
 
-        /* --- Оверлей результата (Зеленый/Красный) --- */
+        /* Оверлеи */
         #result-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -98,7 +97,6 @@
         #result-overlay.show { opacity: 1; pointer-events: auto; }
         #result-overlay.correct-bg { background-color: rgba(34, 197, 94, 0.95); }
         #result-overlay.wrong-bg { background-color: rgba(239, 68, 68, 0.95); }
-
         .res-tag { font-size: 4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
         .res-explanation { font-size: 1.5rem; margin-bottom: 40px; max-width: 600px; line-height: 1.4; }
         .btn-next {
@@ -107,131 +105,166 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* --- Финал --- */
         #final-screen { background: #111; text-align: center; }
         .final-score { font-size: 6rem; font-weight: bold; color: var(--success-color); }
         .final-rank { font-size: 2rem; color: #aaa; margin-bottom: 30px; }
-
     </style>
 </head>
 <body>
 
     <!-- Экран 1: Старт -->
     <div id="start-screen" class="screen">
-        <h1>REALITY CHECK</h1>
-        <button class="btn-start" onclick="startGame()">Начать</button>
+        <h1>Reality Check</h1>
+        <div class="subtitle">Ежедневная викторина</div>
+        <button class="btn-start" onclick="startGame()" id="start-btn" disabled>Загрузка...</button>
+        <p class="status-text" id="status-text">Подключение...</p>
+        <div class="timer-msg hidden" id="come-back-msg">Вы уже играли сегодня.<br>Возвращайтесь завтра!</div>
     </div>
 
     <!-- Экран 2: Игра -->
     <div id="game-screen" class="screen hidden">
-        <!-- Индикаторы (10 кружков) -->
-        <div class="progress-container" id="progress-bar">
-            <!-- Генерируются JS -->
-        </div>
-
-        <!-- Верхняя часть: Новость -->
+        <div class="progress-container" id="progress-bar"></div>
         <div class="news-display" id="news-img">
             <div class="news-overlay"></div>
-            <div class="news-text" id="news-headline">
-                Загрузка...
-            </div>
+            <div class="region-badge" id="region-badge">RU</div>
+            <div class="news-text" id="news-headline">Загрузка...</div>
         </div>
-
-        <!-- Нижняя часть: Выбор -->
         <div class="controls-area">
             <button class="choice-btn btn-left" onclick="checkAnswer('REAL')">НОВОСТЬ</button>
             <button class="choice-btn btn-right" onclick="checkAnswer('FAKE')">ПАНОРАМА</button>
         </div>
     </div>
 
-    <!-- Оверлей ответа (всплывает после выбора) -->
+    <!-- Оверлей ответа -->
     <div id="result-overlay">
         <div class="res-tag" id="res-tag">НОВОСТЬ</div>
-        <div class="res-explanation" id="res-desc">Описание ситуации...</div>
+        <div class="res-explanation" id="res-desc">Описание...</div>
         <button class="btn-next" onclick="nextQuestion()">ДАЛЕЕ</button>
     </div>
 
     <!-- Экран 3: Финал -->
     <div id="final-screen" class="screen hidden">
-        <h2>Ваш результат</h2>
+        <h2>Итог дня</h2>
         <div class="final-score" id="final-score">0/10</div>
         <div class="final-rank" id="final-rank">Звание</div>
-        <button class="btn-start" onclick="location.reload()">ЕЩЁ РАЗ</button>
+        <p style="color: #666; margin-top: 20px;">Следующая игра доступна завтра</p>
     </div>
 
     <script>
-        // --- ДАННЫЕ (Можно менять) ---
-        // type: 'REAL' (Новость) или 'FAKE' (Панорама/Сатира)
-        // img: Ссылка на картинку (заглушки для демонстрации)
-        const db = [
-            {
-                text: "В Госдуме предложили налог на бездетность, чтобы стимулировать рождаемость.",
-                type: "REAL",
-                desc: "Да, такое предложение действительно звучало от некоторых депутатов.",
-                img: "https://placehold.co/800x400/222/FFF?text=Duma"
-            },
-            {
-                text: "Роскосмос покрасит ракеты под хохлому для привлечения туристов.",
-                type: "FAKE",
-                desc: "Это шутка. Хотя гжель бы смотрелась неплохо.",
-                img: "https://placehold.co/800x400/333/FFF?text=Rocket"
-            },
-            {
-                text: "Илон Маск вызвал Путина на поединок за Украину в Твиттере.",
-                type: "REAL",
-                desc: "Это реально было в 2022 году. Маск написал: 'I hereby challenge...'",
-                img: "https://placehold.co/800x400/111/FFF?text=Elon"
-            },
-            {
-                text: "АвтоВАЗ начал выпуск летающих автомобилей Lada Vesta Air.",
-                type: "FAKE",
-                desc: "К сожалению (или к счастью), Лады пока ездят только по земле.",
-                img: "https://placehold.co/800x400/444/FFF?text=Lada"
-            },
-            {
-                text: "В Австралии война с эму закончилась поражением армии.",
-                type: "REAL",
-                desc: "Исторический факт: Великая война с эму 1932 года была проиграна людьми.",
-                img: "https://placehold.co/800x400/555/FFF?text=Emu"
-            },
-            {
-                text: "Минздрав рекомендовал лечить депрессию просмотром 'Сватов'.",
-                type: "FAKE",
-                desc: "Чистая сатира. Хотя смех продлевает жизнь.",
-                img: "https://placehold.co/800x400/222/FFF?text=TV"
-            },
-            {
-                text: "Кошка стала мэром города на Аляске и правила 20 лет.",
-                type: "REAL",
-                desc: "Кот Стаббс был почетным мэром Талкитны с 1997 по 2017 год.",
-                img: "https://placehold.co/800x400/666/FFF?text=Cat+Mayor"
-            },
-            {
-                text: "Apple выпустила iBrick — кирпич за 1000$ для строительства эко-домов.",
-                type: "FAKE",
-                desc: "Это выдумка, но колесики для Mac Pro за 700$ они выпускали.",
-                img: "https://placehold.co/800x400/111/FFF?text=Apple"
-            },
-            {
-                text: "Мужчина подал в суд на самого себя и выиграл дело.",
-                type: "REAL",
-                desc: "Кертис Гоки подал иск против города и себя (водителя) за аварию, чтобы получить страховку.",
-                img: "https://placehold.co/800x400/333/FFF?text=Court"
-            },
-            {
-                text: "Сбербанк ввел комиссию за просмотр баланса глазами.",
-                type: "FAKE",
-                desc: "Шутка о комиссиях банков. Пока что глаза бесплатно.",
-                img: "https://placehold.co/800x400/222/FFF?text=Bank"
-            }
-        ];
-
+        // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+        let fullDb = [];     // Вся база данных
+        let dailySet = [];   // 10 вопросов на сегодня
         let currentQ = 0;
         let score = 0;
-        const totalQ = 10;
         
-        // --- ЛОГИКА ---
+        // Получаем сегодняшнюю дату в формате YYYY-MM-DD
+        const todayStr = new Date().toISOString().slice(0, 10);
 
+        // --- ГЕНЕРАТОР СЛУЧАЙНЫХ ЧИСЕЛ (SEEDED) ---
+        // Позволяет получать одинаковые "случайные" числа для одной и той же даты
+        function mulberry32(a) {
+            return function() {
+                var t = a += 0x6D2B79F5;
+                t = Math.imul(t ^ t >>> 15, t | 1);
+                t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            }
+        }
+
+        // Создаем хэш из строки даты для сида
+        function getDateSeed(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0; 
+            }
+            return Math.abs(hash);
+        }
+
+        const seed = getDateSeed(todayStr);
+        const random = mulberry32(seed); // Теперь используем random() вместо Math.random()
+
+        // Функция перемешивания массива с нашим random()
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+
+        // --- ЗАГРУЗКА ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            const startBtn = document.getElementById('start-btn');
+            const statusText = document.getElementById('status-text');
+            const comeBackMsg = document.getElementById('come-back-msg');
+
+            // 1. Проверка: играл ли уже сегодня?
+            const lastPlayed = localStorage.getItem('lastPlayedDate');
+            if (lastPlayed === todayStr) {
+                startBtn.disabled = true;
+                startBtn.innerText = "ЗАВЕРШЕНО";
+                statusText.classList.add('hidden');
+                comeBackMsg.classList.remove('hidden');
+                return; // Останавливаем загрузку
+            }
+
+            // 2. Загрузка базы
+            try {
+                const response = await fetch('news.json');
+                if (!response.ok) throw new Error("Файл не найден");
+                fullDb = await response.json();
+                
+                // 3. Формирование ежедневного набора
+                generateDailySet();
+
+                startBtn.innerText = "НАЧАТЬ";
+                startBtn.disabled = false;
+                statusText.innerText = `Вопросов на сегодня: 10`;
+
+            } catch (error) {
+                console.error(error);
+                startBtn.innerText = "ОШИБКА";
+                statusText.innerText = "Ошибка загрузки news.json";
+                statusText.style.color = "red";
+            }
+        });
+
+
+        // --- ЛОГИКА ФОРМИРОВАНИЯ ВОПРОСОВ ---
+        function generateDailySet() {
+            // Разделяем базу на правду и ложь
+            const realNews = fullDb.filter(item => item.type === 'REAL');
+            const fakeNews = fullDb.filter(item => item.type === 'FAKE');
+
+            if (realNews.length < 6 || fakeNews.length < 6) {
+                alert("Ошибка: В базе слишком мало новостей для баланса!");
+                return;
+            }
+
+            // Перемешиваем обе кучи (используя сид дня!)
+            shuffleArray(realNews);
+            shuffleArray(fakeNews);
+
+            // Решаем, сколько будет правды: от 4 до 6
+            // random() дает 0..1. 
+            // Math.floor(random() * 3) дает 0, 1 или 2.
+            // + 4 дает 4, 5 или 6.
+            const realCount = 4 + Math.floor(random() * 3); 
+            const fakeCount = 10 - realCount;
+
+            // Набираем вопросы
+            const selectedReal = realNews.slice(0, realCount);
+            const selectedFake = fakeNews.slice(0, fakeCount);
+
+            // Объединяем и снова перемешиваем, чтобы они шли не по порядку
+            dailySet = [...selectedReal, ...selectedFake];
+            shuffleArray(dailySet);
+        }
+
+
+        // --- ИГРОВОЙ ПРОЦЕСС ---
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
@@ -242,7 +275,7 @@
         function initDots() {
             const container = document.getElementById('progress-bar');
             container.innerHTML = '';
-            for(let i=0; i<totalQ; i++) {
+            for(let i=0; i<10; i++) {
                 let d = document.createElement('div');
                 d.className = 'dot';
                 d.id = 'dot-'+i;
@@ -251,39 +284,43 @@
         }
 
         function loadQuestion() {
-            if (currentQ >= totalQ) return showResults();
+            if (currentQ >= 10) return showResults();
             
-            const q = db[currentQ];
+            const q = dailySet[currentQ];
             document.getElementById('news-headline').innerText = q.text;
             document.getElementById('news-img').style.backgroundImage = `url('${q.img}')`;
             
-            // Подсветка активной точки
+            // Тег региона (пока просто отображаем)
+            const region = q.region ? q.region.toUpperCase() : 'WORLD';
+            document.getElementById('region-badge').innerText = region;
+
+            // Точки
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            document.getElementById('dot-'+currentQ).classList.add('active');
+            if(document.getElementById('dot-'+currentQ)) {
+                document.getElementById('dot-'+currentQ).classList.add('active');
+            }
         }
 
         function checkAnswer(userChoice) {
-            const q = db[currentQ];
+            const q = dailySet[currentQ];
             const isCorrect = userChoice === q.type;
             const overlay = document.getElementById('result-overlay');
             const tag = document.getElementById('res-tag');
             const desc = document.getElementById('res-desc');
             const dot = document.getElementById('dot-'+currentQ);
 
-            // Настройка оверлея
-            overlay.className = ''; // Сброс классов
+            overlay.className = ''; 
             if (isCorrect) {
                 overlay.classList.add('show', 'correct-bg');
                 tag.innerText = "ВЕРНО!";
                 score++;
-                dot.classList.add('correct');
+                if(dot) dot.classList.add('correct');
             } else {
                 overlay.classList.add('show', 'wrong-bg');
                 tag.innerText = "ОШИБКА!";
-                dot.classList.add('wrong');
+                if(dot) dot.classList.add('wrong');
             }
 
-            // Показываем реальный тип новости
             desc.innerHTML = `<strong>ЭТО ${q.type === 'REAL' ? 'НОВОСТЬ' : 'ПАНОРАМА'}</strong><br><br>${q.desc}`;
         }
 
@@ -294,10 +331,13 @@
         }
 
         function showResults() {
+            // Записываем, что пользователь сыграл сегодня
+            localStorage.setItem('lastPlayedDate', todayStr);
+
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('final-screen').classList.remove('hidden');
             
-            document.getElementById('final-score').innerText = `${score} / ${totalQ}`;
+            document.getElementById('final-score').innerText = `${score} / 10`;
             
             let rank = "Новичок интернета";
             if(score > 4) rank = "Опытный серфер";
