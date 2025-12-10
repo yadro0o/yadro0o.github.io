@@ -3,180 +3,132 @@
     "id": 1,
     "type": "REAL",
     "region": "ru",
-    "text": "В Госдуме предложили налог на бездетность.",
-    "desc": "Предложение звучало от депутатов, но не было принято.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/111/FFF?text=News+1",
-    "link": "https://www.rbc.ru/politics/..."
+    "link": "Ссылка на источник"
   },
   {
     "id": 2,
     "type": "FAKE",
     "region": "ru",
-    "text": "Роскосмос покрасит ракеты под хохлому.",
-    "desc": "Это сатира. Хотя идея с гжелью могла бы сработать.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/222/FFF?text=News+2",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 3,
     "type": "REAL",
     "region": "usa",
-    "text": "Илон Маск вызвал Путина на поединок в Твиттере.",
-    "desc": "Это было в 2022 году.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/333/FFF?text=News+3",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 4,
     "type": "FAKE",
     "region": "usa",
-    "text": "ООН запретила использовать букву Z в алфавите.",
-    "desc": "Выдумка.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/444/FFF?text=News+4",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 5,
     "type": "REAL",
     "region": "eu",
-    "text": "В Финляндии проводятся соревнования по переноске жен.",
-    "desc": "Это реальный ежегодный чемпионат.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/555/FFF?text=News+5",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 6,
     "type": "FAKE",
     "region": "eu",
-    "text": "Британские ученые доказали, что коты — жидкие.",
-    "desc": "Это старый мем, а не научное исследование.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/666/FFF?text=News+6",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 7,
     "type": "REAL",
     "region": "world",
-    "text": "Австралия проиграла войну страусам эму.",
-    "desc": "Исторический факт 1932 года.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/777/FFF?text=News+7",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 8,
     "type": "FAKE",
     "region": "world",
-    "text": "Apple выпустила кирпич iBrick за 1000 долларов.",
-    "desc": "Выдумка, высмеивающая цены компании.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/888/FFF?text=News+8",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 9,
     "type": "REAL",
     "region": "ru",
-    "text": "Кошка стала мэром города на Аляске.",
-    "desc": "Кот Стаббс был мэром Талкитны 20 лет.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/999/FFF?text=News+9",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 10,
     "type": "FAKE",
     "region": "ru",
-    "text": "Сбербанк ввел комиссию за просмотр баланса.",
-    "desc": "Шутка.",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/aaa/FFF?text=News+10",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 11,
     "type": "REAL",
     "region": "usa",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/bbb/FFF?text=News+11",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 12,
     "type": "FAKE",
     "region": "usa",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/ccc/FFF?text=News+12",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 13,
     "type": "REAL",
     "region": "eu",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/ddd/FFF?text=News+13",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 14,
     "type": "FAKE",
     "region": "eu",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
     "img": "https://placehold.co/800x600/eee/FFF?text=News+14",
-    "link": ""
+    "link": "Ссылка на источник"
   },
   {
     "id": 15,
     "type": "REAL",
     "region": "world",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/123/FFF?text=News+15",
-    "link": ""
-  },
-  {
-    "id": 16,
-    "type": "FAKE",
-    "region": "world",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/234/FFF?text=News+16",
-    "link": ""
-  },
-  {
-    "id": 17,
-    "type": "REAL",
-    "region": "ru",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/345/FFF?text=News+17",
-    "link": ""
-  },
-  {
-    "id": 18,
-    "type": "FAKE",
-    "region": "ru",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/456/FFF?text=News+18",
-    "link": ""
-  },
-  {
-    "id": 19,
-    "type": "REAL",
-    "region": "usa",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/567/FFF?text=News+19",
-    "link": ""
-  },
-  {
-    "id": 20,
-    "type": "FAKE",
-    "region": "usa",
-    "text": "ЗАПОЛНИ МЕНЯ",
-    "desc": "Описание",
-    "img": "https://placehold.co/800x600/678/FFF?text=News+20",
-    "link": ""
-  }
-]
+    "text": "Заголовок новости",
+    "desc": "Объяснение/Описание/Источник",
+    "img": "https://placehold.co/800x600/123/FFF?text=News+15
