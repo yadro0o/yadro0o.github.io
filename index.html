@@ -26,7 +26,13 @@
         .hidden { display: none !important; }
 
         /* Главная */
-        #start-screen { background: #000; text-align: center; padding: 20px; overflow-y: auto; position: relative; }
+        #start-screen {
+            background: #000;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+            /* position: relative;  <-- убрал, чтобы экран снова занимал 100% высоты */
+        }
         h1 { font-size: 3rem; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
         .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.2rem; }
         
@@ -49,7 +55,7 @@
         #admin-panel {
             margin-top: 40px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
             text-align: left; max-width: 300px;
-            display: none;  /* скрыто по умолчанию */
+            display: none;
         }
         #admin-panel.visible { display: block; }
         #admin-panel h3 { margin-bottom: 10px; font-size: 1rem; color: #888; text-transform: uppercase; }
@@ -57,7 +63,6 @@
         #admin-panel button { padding: 5px 15px; cursor: pointer; background: #444; color: #fff; border: none; border-radius: 4px; }
         #admin-panel button:hover { background: #555; }
 
-        /* Иконка Telegram снизу слева */
         .tg-link {
             position: absolute;
             left: 20px;
@@ -77,7 +82,14 @@
         }
 
         /* ИГРОВОЙ ЭКРАН - ОБЩЕЕ */
-        #game-screen { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        #game-screen {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            transition: background-color 0.25s ease;
+        }
         
         .progress-container {
             position: absolute; top: 20px; left: 0; width: 100%;
@@ -95,7 +107,7 @@
             backdrop-filter: blur(5px);
         }
 
-        /* --- РЕЖИМ 1: TEXT --- */
+        /* --- TEXT --- */
         #game-screen.mode-text .news-display {
             position: relative; height: 35vh; width: 100%;
             background-size: cover; background-position: center;
@@ -112,7 +124,6 @@
             font-weight: 700;
             text-shadow: 0 2px 4px #000;
             margin-bottom: 10px;
-            /* базовый крупный размер */
             font-size: 2.2rem;
             line-height: 1.25;
         }
@@ -128,10 +139,10 @@
         #game-screen.mode-text .btn-left:hover { background-color: var(--news-color); color: #fff; flex-grow: 1.1; }
         #game-screen.mode-text .btn-right:hover { background-color: var(--panorama-color); color: #fff; flex-grow: 1.1; }
 
-        /* --- РЕЖИМ 2: IMAGE --- */
+        /* --- IMAGE --- */
         #game-screen.mode-image {
-            display: flex; flex-direction: row;
-            background: #111;
+            display: flex;
+            flex-direction: row;
         }
 
         #game-screen.mode-image .controls-area {
@@ -174,12 +185,11 @@
             width: 35%;
         }
 
-        /* Центральная область в режиме image */
         #game-screen.mode-image .news-display {
             order: 2; flex-grow: 1;
             position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: #000; /* будет перекрашиваться из JS */
+            background: #000;
             transition: background-color 0.25s ease;
         }
         
@@ -190,6 +200,7 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
             display: flex; justify-content: center; align-items: center;
             background: #222;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
         #game-screen.mode-image .main-image {
             width: 100%; height: 100%; object-fit: contain; display: block;
@@ -355,30 +366,37 @@
             const devDateInput = document.getElementById('dev-date-input');
             devDateInput.value = todayStr;
 
-            // Показ/скрытие Dev Tools по клику на логотип
             const logo = document.getElementById('logo');
             const adminPanel = document.getElementById('admin-panel');
             logo.addEventListener('click', () => {
                 adminPanel.classList.toggle('visible');
             });
 
-            // Подсветка фона в режиме image при наведении
             const leftBtn = document.querySelector('#game-screen .btn-left');
             const rightBtn = document.querySelector('#game-screen .btn-right');
             const displayArea = document.getElementById('news-display-area');
+            const imgContainer = document.getElementById('img-container');
+            const gameScreen = document.getElementById('game-screen');
             const rootStyles = getComputedStyle(document.documentElement);
             const newsColor = rootStyles.getPropertyValue('--news-color').trim() || '#3b82f6';
             const panoColor = rootStyles.getPropertyValue('--panorama-color').trim() || '#f59e0b';
 
+            const defaultGameBg = '#111';
+            const defaultDisplayBg = '#000';
+            const defaultImgBg = '#222';
+
             function setImageBg(color) {
-                const gameScreen = document.getElementById('game-screen');
                 if (!gameScreen.classList.contains('mode-image')) return;
+                // Заливаем весь фон игры и центральный блок с картинкой
+                gameScreen.style.backgroundColor = color;
                 displayArea.style.backgroundColor = color;
+                imgContainer.style.backgroundColor = color;
             }
             function resetImageBg() {
-                const gameScreen = document.getElementById('game-screen');
                 if (!gameScreen.classList.contains('mode-image')) return;
-                displayArea.style.backgroundColor = '#000';
+                gameScreen.style.backgroundColor = defaultGameBg;
+                displayArea.style.backgroundColor = defaultDisplayBg;
+                imgContainer.style.backgroundColor = defaultImgBg;
             }
 
             leftBtn.addEventListener('mouseenter', () => setImageBg(newsColor));
@@ -484,11 +502,12 @@
             document.getElementById('region-badge').innerText = q.region ? q.region.toUpperCase() : "WORLD";
 
             if (mode === 'text') {
+                gameScreen.style.backgroundColor = '#111';
                 displayArea.style.backgroundImage = `url('${q.img}')`;
                 displayArea.style.backgroundColor = 'transparent';
                 imgContainer.classList.add('hidden');
+                imgContainer.style.backgroundColor = '#222';
 
-                // Адаптивный размер шрифта по длине текста
                 const len = (q.text || '').length;
                 let fs = '2.2rem';
                 if (len > 140) {
@@ -500,11 +519,12 @@
                 }
                 headline.style.fontSize = fs;
             } else {
+                gameScreen.style.backgroundColor = '#111';
                 displayArea.style.backgroundImage = 'none';
                 displayArea.style.backgroundColor = '#000';
                 imgContainer.classList.remove('hidden');
+                imgContainer.style.backgroundColor = '#222';
                 mainImg.src = q.img || '';
-                // Для подписи под картинкой делаем стандартный размер
                 headline.style.fontSize = '1.4rem';
             }
 
